@@ -6,10 +6,8 @@ import {Col, Row} from "react-bootstrap";
 const GameProfileTeaser = (args) => {
     let gameId = args.gameId;
 
-    console.log("Args not null: ", gameId)
-
     const game = GameCollectionTest.find(
-        game=> game._id.id === gameId)
+        game=> game._id.id === gameId._id.id)
 
     return (
         <Container>
@@ -18,7 +16,7 @@ const GameProfileTeaser = (args) => {
                        className={"h-75"}
                        alt={game.name + " cover image."}
                        fluid rounded/>
-                <h1>{game.name}</h1>
+                <p>{game.name}</p>
         </Container>
     );
 }
