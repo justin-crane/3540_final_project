@@ -7,7 +7,7 @@ const GameProfile = () => {
 
     const {gameId} = useParams();
 
-    const game = GameCollectionTest.find(game => game._id.id === gameId)
+    let game = GameCollectionTest.find(game => game._id.id === gameId)
 
     return (
         <Container>
