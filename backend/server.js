@@ -7,7 +7,7 @@ const mongo = require("mongodb")
 const {MongoClient} = require("mongodb");
 
 const PORT = process.env.PORT || 3001;
-const MONGO_URI = 'mongodb+srv://PhilipT:5FMVbLHH2pUpdL6V@atlascluster.axuhh7n.mongodb.net/';
+const MONGO_URI = 'mongodb+srv://PhilipT:<password>@atlascluster.axuhh7n.mongodb.net/';
 const app = express();
 
 const storage = multer.diskStorage({
