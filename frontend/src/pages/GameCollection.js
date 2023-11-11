@@ -1,6 +1,13 @@
+
+
 const GameCollection = () => {
+
     return (
-        <h1>Game Collection</h1>
+        <>
+            <h1>Game Collection</h1>
+
+        </>
+
     );
 }
 

@@ -1,10 +1,11 @@
 // server/index.js
+import 'dotenv/config'
 
 const express = require("express");
 const mongoose = require("mongoose");
 
 const PORT = process.env.PORT || 3001;
-const MONGO_URI = 'mongodb://localhost:27017/VGTCDB';
+const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@atlascluster.axuhh7n.mongodb.net/?retryWrites=true&w=majority`;
 const app = express();
 
 // Connect to MongoDB
