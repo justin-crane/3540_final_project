@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const mongo = require("mongodb")
 const {MongoClient} = require("mongodb");
+require('dotenv').config()
 
 const PORT = process.env.PORT || 3001;
 const MONGO_URI = 'mongodb+srv://' + process.env.USER + ':'+ process.env.PASSWORD +'@atlascluster.axuhh7n.mongodb.net/';
