@@ -1,24 +1,26 @@
-import logo from './logo.svg';
 import './App.css';
+import Home from "./pages/Home";
+import GameProfile from "./pages/GameProfile";
+import GameCollection from "./pages/GameCollection";
+import UserProfile from "./pages/UserProfile";
+import {Route, Routes, BrowserRouter} from "react-router-dom";
+import RandomGame from "./pages/RandomGame";
 
 function App() {
+  //code
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+        <>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"/"} element={<Home/>} />
+                    <Route path={"/games"} element={<GameCollection/>} />
+                    <Route path={"/games/:gameId"} element={<GameProfile/>} />
+                    <Route path={"/user"} element={<UserProfile/>} />
+                    <Route path={"/games/random/:randomId"} element={<RandomGame />} />
+                </Routes>
+            </BrowserRouter>
+        </>
   );
 }
 

@@ -1,19 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {BrowserRouter, Routes, Route} from "react-router-dom";
-import {AddGame} from "./addGame";
+import NavigationBar from "./components/NavigationBar";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/add" element={<AddGame />} />
-        </Routes>
-    </BrowserRouter>
+  <React.StrictMode>
+      <NavigationBar/>
+      <>
+          <App />
+      </>
+
+  </React.StrictMode>
+
 );
 
 // If you want to start measuring performance in your app, pass a function
