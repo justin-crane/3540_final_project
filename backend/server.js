@@ -1,4 +1,5 @@
 // server/index.js
+import 'dotenv/config'
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -8,7 +9,8 @@ const {MongoClient} = require("mongodb");
 require('dotenv').config()
 
 const PORT = process.env.PORT || 3001;
-const MONGO_URI = 'mongodb+srv://' + process.env.USER + ':'+ process.env.PASSWORD +'@atlascluster.axuhh7n.mongodb.net/';
+
+const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@atlascluster.axuhh7n.mongodb.net/?retryWrites=true&w=majority`;
 const app = express();
 
 const storage = multer.diskStorage({
