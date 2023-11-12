@@ -6,6 +6,7 @@ import UserProfile from "./pages/UserProfile";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import RandomGame from "./pages/RandomGame";
 import {LogInPage} from "./pages/LogInPage";
+import {SignUpPage} from "./pages/SignUpPage";
 
 function App() {
   //code
@@ -20,6 +21,7 @@ function App() {
                     <Route path={"/user"} element={<UserProfile/>} />
                     <Route path={"/games/random/:randomId"} element={<RandomGame />} />
                     <Route path={"/login"} element={<LogInPage />} />
+                    <Route path={"/signup"} element={<SignUpPage />} />
                 </Routes>
             </BrowserRouter>
         </>
