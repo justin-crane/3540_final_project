@@ -5,6 +5,7 @@ import GameCollection from "./pages/GameCollection";
 import UserProfile from "./pages/UserProfile";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import RandomGame from "./pages/RandomGame";
+import {AddGame} from "./pages/AddGame";
 
 function App() {
   //code
@@ -17,6 +18,7 @@ function App() {
                     <Route path={"/games"} element={<GameCollection/>} />
                     <Route path={"/games/:gameId"} element={<GameProfile/>} />
                     <Route path={"/user"} element={<UserProfile/>} />
+                    <Route path={"/addgame"} element={<AddGame/>} />
                     <Route path={"/games/random/:randomId"} element={<RandomGame />} />
                 </Routes>
             </BrowserRouter>
