@@ -7,6 +7,7 @@ import {Route, Routes, BrowserRouter} from "react-router-dom";
 import RandomGame from "./pages/RandomGame";
 import {LogInPage} from "./pages/LogInPage";
 import {SignUpPage} from "./pages/SignUpPage";
+import {AddGame} from "./pages/AddGame";
 
 function App() {
   //code
@@ -15,13 +16,14 @@ function App() {
         <>
             <BrowserRouter>
                 <Routes>
-                        <Route path={"/"} element={<Home/>} />
-                        <Route path={"/games"} element={<GameCollection/>} />
-                        <Route path={"/games/:gameId"} element={<GameProfile/>} />
-                        <Route path={"/user"} element={<UserProfile/>} />
-                        <Route path={"/games/random/:randomId"} element={<RandomGame />} />
-                        <Route path={"/login"} element={<LogInPage />} />
-                        <Route path={"/signup"} element={<SignUpPage />} />
+                    <Route path={"/"} element={<Home/>} />
+                    <Route path={"/games"} element={<GameCollection/>} />
+                    <Route path={"/games/:gameId"} element={<GameProfile/>} />
+                    <Route path={"/user"} element={<UserProfile/>} />
+                    <Route path={"/games/random/:randomId"} element={<RandomGame />} />
+                    <Route path={"/login"} element={<LogInPage />} />
+                    <Route path={"/signup"} element={<SignUpPage />} />
+                    <Route path={"/addgame"} element={<AddGame />} />
                 </Routes>
             </BrowserRouter>
         </>
