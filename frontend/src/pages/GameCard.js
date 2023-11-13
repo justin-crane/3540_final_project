@@ -1,3 +1,4 @@
+import '../App.css';
 import GameCollectionTest from "../testData/GameCollectionTest";
 import {Card, Col} from "react-bootstrap";
 const GameCard = (args) => {
@@ -9,7 +10,9 @@ const GameCard = (args) => {
     return (
         <Col key={idx}>
             <a href={`/games/${gameId}`} style={{textDecoration:"none"}}>
-                <Card border={"dark"}
+                <Card
+                    className={"hvr-grow-shadow"}
+                    border={"dark"}
                     style={{
                         cursor:"pointer",
                         aspectRatio:"0.6",
