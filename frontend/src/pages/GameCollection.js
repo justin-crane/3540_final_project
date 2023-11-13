@@ -19,7 +19,7 @@ const GameCollection = () => {
                                         <Card.Title>{game.name}</Card.Title>
                                     </Card.Body>
                                 </Card>
-                          </div>
+                            </div>
                         </Col>
                     ))}
                 </Row>
