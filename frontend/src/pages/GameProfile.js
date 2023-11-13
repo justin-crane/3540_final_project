@@ -1,13 +1,14 @@
 import {useParams} from "react-router-dom";
-import GameCollectionTest from "../testData/GameCollectionTest";
 import Container from 'react-bootstrap/Container'
 import Image from "react-bootstrap/Image";
 import {Col, Row} from "react-bootstrap";
-const GameProfile = () => {
 
+const GameProfile = (args) => {
+    const {gameList} = args;
     const {gameId} = useParams();
 
-    let game = GameCollectionTest.find(game => game._id.id === gameId)
+    const game = gameList.find(
+        game => game._id === gameId)
 
     return (
         <Container>

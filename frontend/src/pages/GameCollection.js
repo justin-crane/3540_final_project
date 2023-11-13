@@ -1,29 +1,22 @@
-import GameProfileTeaser from "./GameProfileTeaser";
-import GameCollectionTest from "../testData/GameCollectionTest";
-import Container from "react-bootstrap/Container";
-import {Card, Col, Row} from "react-bootstrap";
+import GameCard from "../components/GameCard";
+import {Row} from "react-bootstrap";
 
-const GameCollection = () => {
+const GameCollection = (args) => {
+
+    let {gameList, setGameList} = args;
 
     return (
         <>
             <h1 className={"text-center"}>Game Collection</h1>
-            <Container fluid>
-                <Row className={"row justify-content-center"}>
-                    {GameCollectionTest.map(game => (
-                        <Col xs={10} md={5} lg={2}>
-                            <div key={game.name+game._id.id+game.notes}>
-                                <Card>
-                                    <Card.Img variant={"top"} src={`/images/${game.img}`}/>
-                                    <Card.Body>
-                                        <Card.Title>{game.name}</Card.Title>
-                                    </Card.Body>
-                                </Card>
-                            </div>
-                        </Col>
-                    ))}
-                </Row>
-            </Container>
+            {/*<CardGroup className={"justify-content-center"}>*/}
+            <Row xs={1}
+                 md={2} lg={4}
+                 className={"justify-content-center text-center"}>
+                        {gameList.map(game => (
+                            <GameCard gameId={game._id} gameList={gameList}/>
+                        ))}
+            </Row>
+            {/*</CardGroup>*/}
         </>
 
     );
