@@ -40,10 +40,16 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3001;
 const app = express();
 const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@atlascluster.axuhh7n.mongodb.net/?retryWrites=true&w=majority`;
 app.use(cors());
+
+/*
+
+    Tester API
+
+ */
 
 app.use(express.json());
 
@@ -77,6 +83,33 @@ app.get('/api/google/oauth', async (req, res) => {
 app.get('/api/hello/', async (req, res) => {
     res.send("Hello");
 })
+
+
+/*
+
+    Game Collection API
+
+ */
+
+app.get('/api/gamelist/', async (req, res) => {
+    const game = await db.collection('gamelist').find({}).toArray();
+    if (game){
+        res.json(game);
+    } else {
+        res.sendStatus(404);
+    }
+})
+
+app.get('/api/games/:id', async (req, res) => {
+    const { id } = req.params;
+    const recipe = await db.collection('gamelist').findOne({ id });
+    if (recipe){
+        res.json(recipe);
+    } else {
+        res.sendStatus(404);
+    }
+})
+
 app.post('/api/addgame/', async (req, res) => {
     const { name, console, img, condition, availability, notes } = req.body;
     let game = await db.collection('gamelist').insertOne({
@@ -89,6 +122,9 @@ app.post('/api/addgame/', async (req, res) => {
         res.sendStatus(404);
     }
 })
+
+
+
 run(()=>{
     app.listen(PORT, ()=>{
         console.log(`App is listening on port ` + PORT);
