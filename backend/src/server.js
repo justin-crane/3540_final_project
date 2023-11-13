@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { db, run } from "./db.js";
 import express from "express";
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(express.json());
@@ -21,6 +21,7 @@ app.post('/api/addgame/', async (req, res) => {
         res.sendStatus(404);
     }
 })
+
 run(()=>{
     app.listen(PORT, ()=>{
         console.log(`App is listening on port ` + PORT);
