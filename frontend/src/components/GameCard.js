@@ -1,15 +1,16 @@
 import '../App.css';
-import GameCollectionTest from "../testData/GameCollectionTest";
 import {Card, Col} from "react-bootstrap";
+import {Link} from 'react-router-dom';
+
 const GameCard = (args) => {
-    let gameId = args.gameId;
-    let idx = args.idx;
-    const game = GameCollectionTest.find(
-        game=> game._id.id === gameId)
+    let {gameId, gameList} = args;
+
+    const game = gameList.find(
+        game => game._id === gameId)
 
     return (
-        <Col key={idx}>
-            <a href={`/games/${gameId}`} style={{textDecoration:"none"}}>
+        <Col key={game.name + game.notes + game.console}>
+            <Link to={`/games/${gameId}`}>
                 <Card
                     className={"hvr-grow-shadow"}
                     border={"dark"}
@@ -32,7 +33,7 @@ const GameCard = (args) => {
                         <small className={"text-muted"}>Posted by: @username</small>
                     </Card.Footer>
                 </Card>
-            </a>
+            </Link>
         </Col>
     );
 }

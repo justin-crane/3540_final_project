@@ -1,8 +1,9 @@
-import GameCard from "./GameCard";
-import GameCollectionTest from "../testData/GameCollectionTest";
-import {CardGroup, Row} from "react-bootstrap";
+import GameCard from "../components/GameCard";
+import {Row} from "react-bootstrap";
 
-const GameCollection = () => {
+const GameCollection = (args) => {
+
+    let {gameList, setGameList} = args;
 
     return (
         <>
@@ -11,8 +12,8 @@ const GameCollection = () => {
             <Row xs={1}
                  md={2} lg={4}
                  className={"justify-content-center text-center"}>
-                        {GameCollectionTest.map((game, idx) => (
-                            <GameCard gameId={game._id.id} idx={idx} />
+                        {gameList.map(game => (
+                            <GameCard gameId={game._id} gameList={gameList}/>
                         ))}
             </Row>
             {/*</CardGroup>*/}
