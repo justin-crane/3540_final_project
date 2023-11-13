@@ -7,6 +7,27 @@ import { db, run } from "./db.js";
 import fetch from 'node-fetch';
 
 
+const PORT = process.env.PORT || 3001;
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+
+/*
+
+    Tester API
+
+ */
+app.get('/api/hello/', async (req, res) => {
+    res.send("Hello");
+})
+
+
+/*
+
+    OAuth
+
+ */
 // Set up Google OAuth client
 const oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -40,19 +61,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-const PORT = process.env.PORT || 3001;
-const app = express();
-const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PW}@atlascluster.axuhh7n.mongodb.net/?retryWrites=true&w=majority`;
-app.use(cors());
-
-/*
-
-    Tester API
-
- */
-
-app.use(express.json());
-
 // Google OAuth URL route
 app.get('/api/google/oauthURL', (req, res) => {
     const googleOauthURL = getGoogleOauthURL();
@@ -80,17 +88,12 @@ app.get('/api/google/oauth', async (req, res) => {
     }
 });
 
-app.get('/api/hello/', async (req, res) => {
-    res.send("Hello");
-})
-
 
 /*
 
     Game Collection API
 
  */
-
 app.get('/api/gamelist/', async (req, res) => {
     const game = await db.collection('gamelist').find({}).toArray();
     if (game){
@@ -122,7 +125,6 @@ app.post('/api/addgame/', async (req, res) => {
         res.sendStatus(404);
     }
 })
-
 
 
 run(()=>{
