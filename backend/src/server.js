@@ -5,7 +5,7 @@ import { google } from 'googleapis';
 import cors from 'cors';
 import { db, run } from "./db.js";
 import fetch from 'node-fetch';
-
+import bcrypt from 'bcrypt';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -94,14 +94,39 @@ app.get('/api/google/oauth', async (req, res) => {
     Game Collection API
 
  */
-app.get('/api/gamelist/', async (req, res) => {
-    const game = await db.collection('gamelist').find({}).toArray();
-    if (game){
-        res.json(game);
-    } else {
-        res.sendStatus(404);
+//commenting out for now as still working on
+/* app.get('/api/gamelist/', authenticateToken, async (req, res) => {
+    const userId = req.query.userId;
+
+    if (!userId) {
+        return res.status(400).send('User ID is required');
     }
-})
+
+    try {
+        const games = await db.collection('gamelist').find({ userId }).toArray();
+        if (games.length > 0){
+            res.json(games);
+        } else {
+            res.status(404).send('No games found for this user');
+        }
+    } catch (error) {
+        console.error('Error fetching user-specific games:', error);
+        res.status(500).send('Error fetching games');
+    }
+}); */
+app.get('/api/gamelist/', async (req, res) => {
+    try {
+        const games = await db.collection('gamelist').find({}).toArray();
+        if (games){
+            res.json(games);
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        res.status(500).send('Error fetching games');
+    }
+});
 
 app.get('/api/games/:id', async (req, res) => {
     const { id } = req.params;
@@ -113,18 +138,83 @@ app.get('/api/games/:id', async (req, res) => {
     }
 })
 
-app.post('/api/addgame/', async (req, res) => {
-    const { name, console, img, condition, availability, notes } = req.body;
-    let game = await db.collection('gamelist').insertOne({
-        name, console, img, condition, availability, notes
-    });
-    let gameArray = await db.collection('gamelist').find({}).toArray();
-    if (gameArray){
-        res.json(gameArray);
-    } else {
-        res.sendStatus(404);
+app.post('/api/addgame/', authenticateToken, async (req, res) => {
+    const { name, gameConsole, img, condition, availability, notes } = req.body;
+
+    // Extract the userId from request object, was attached by 'authenticateToken' middleware
+    // Ensure the JWT token contains the user ID
+    const userId = req.user.id;
+
+    try {
+        // Added userId
+        const result = await db.collection('gamelist').insertOne({
+            userId, name, gameConsole, img, condition, availability, notes
+        });
+
+        console.log(result); //added for debugging
+
+        if (result.acknowledged === true) {
+            res.status(201).json({ message: 'Game added successfully', insertedId: result.insertedId });
+        } else {
+            throw new Error('Insert operation did not return a valid result');
+        }
+    } catch (error) {
+        console.error('Error adding game:', error);
+        res.status(500).send('Error adding game');
     }
-})
+});
+
+// User registration route
+app.post('/api/register', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).send('Username, email, and password are required');
+    }
+
+    const existingUser = await db.collection('users').findOne({ email: email });
+    if (existingUser) {
+        return res.status(409).send('Email already in use');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        const result = await db.collection('users').insertOne({
+            username,
+            email,
+            password: hashedPassword
+        });
+
+        const token = jwt.sign({ id: result.insertedId, email: email }, process.env.JWT_SECRET, { expiresIn: '2d' });
+
+        res.status(201).send({ id: result.insertedId, token: token });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        res.status(500).send('Error creating user');
+    }
+});
+
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).send('Email and password are required');
+    }
+
+    try {
+        const user = await db.collection('users').findOne({ email: email });
+        if (user && await bcrypt.compare(password, user.password)) {
+            const token = jwt.sign({ id: user._id, email: email }, process.env.JWT_SECRET, { expiresIn: '2d' });
+            res.status(200).send({ token: token });
+        } else {
+            res.status(401).send('Invalid email or password');
+        }
+    } catch (error) {
+        console.error('Error logging in user:', error);
+        res.status(500).send('Error logging in user');
+    }
+});
 
 
 run(()=>{
