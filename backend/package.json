@@ -5,7 +5,11 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+
+    "dev": "nodemon server.js",
+
     "dev": "nodemon src/server.js",
+
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,6 +17,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "aws-sdk": "^2.1496.0",
     "axios": "^1.6.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -21,10 +26,17 @@
     "google-auth-library": "^9.2.0",
     "googleapis": "^128.0.0",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
     "multer": "^1.4.5-lts.1",
+
+    "multer-s3": "^2.10.0",
+    "nodemon": "^3.0.1",
+    "oauth": "^0.10.0"
+
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.1"
+
   }
 }

@@ -6,7 +6,9 @@ import Button from 'react-bootstrap/Button';
 
 export  function AddGame(){
 
-    const {gameList, setGameList} = useState();
+    const [gameList, setGameList] = useState();
+
+    const [file, setFile] = useState()
 
     const [gameFormData, setGameFormData] = useState({
         name: "",
@@ -22,22 +24,39 @@ export  function AddGame(){
         const value = e.target.value;
         setGameFormData({...gameFormData, [key]: value});
     }
+
+    const handleFile = (e) => {
+        const fileImg = e.target.files[0];
+        setFile(fileImg)
+    }
     const submit = async (e) => {
         e.preventDefault();
 
-        const responseGames = await axios.post(`/api/addgame`, {
+        const formData = new FormData();
+        let imgLoc;
+        formData.append("img", file)
+
+        const response = await axios.post('/api/addGameImage', formData,{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+            .then(res => {
+                imgLoc = res.data.imageLocation;
+            })
+
+        let data = {
             name: gameFormData.name,
             gameConsole: gameFormData.console,
             condition: gameFormData.condition,
             availability: gameFormData.availability,
             notes: gameFormData.notes,
-            img: gameFormData.img,
-        });
+            img: imgLoc,
+        };
 
+        const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)
-
         console.log(responseGames);
-
         e.target.reset();
     }
     return (
@@ -48,7 +67,7 @@ export  function AddGame(){
             <div className="w-75 mx-auto">
                 <h1>Submit a Game</h1>
 
-                <Form onSubmit={submit}>
+                <Form onSubmit={submit} >
                     <Form.Group id="formName" controlId="formName">
                         <Form.Label></Form.Label>
                         <Form.Control
@@ -92,10 +111,13 @@ export  function AddGame(){
                     <Form.Group id="formIMG" controlId="formIMG">
                         <Form.Label></Form.Label>
                         <Form.Control
-                            type="text"
+                            formAction="/upload_files"
+                            type="file"
+                            encType="multipart/form-data"
                             placeholder="Image (Placeholder, just add text for now)"
                             name="img"
-                            onChange={updateGameForm}/>
+                            onChange={handleFile}
+                        />
                     </Form.Group>
                     <Button type="submit" variant="outline-success m-3 w-25" >Submit</Button>
                 </Form>
