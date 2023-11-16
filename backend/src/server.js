@@ -4,6 +4,7 @@ import express from "express";
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import AWS from 'aws-sdk';
+import {ObjectId} from 'mongodb';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -59,14 +60,43 @@ app.get('/api/gamelist/', async (req, res) => {
 
 app.get('/api/games/:id', async (req, res) => {
     const { id } = req.params;
-    const recipe = await db.collection('gamelist').findOne({ id });
-    if (recipe){
-        res.json(recipe);
+    const game = await db.collection('gamelist').findOne({ id });
+    if (game){
+        res.json(game);
     } else {
         res.sendStatus(404);
     }
 })
 
+app.put('/api/games/:id/update', async (req, res) => {
+    const gameLookup = { _id: new ObjectId(req.params.id) };
+    const newGameInfo = {
+        $set: {
+            "name": req.body.name,
+            "console": req.body.console,
+            "condition": req.body.condition,
+            "availability": req.body.availability,
+            "notes": req.body.notes,
+            "img": req.body.img
+        }
+    };
+    const options = { upsert: true };
+    const game = await db.collection('gamelist').findOne(gameLookup);
+    const gameUpdated = await db.collection('gamelist').findOneAndUpdate(gameLookup, newGameInfo, options);
+    if (game){
+        res.json(gameUpdated);
+    } else {
+        res.sendStatus(404);
+    }
+})
+
+app.delete('/api/games/:id/remove', async (req, res) => {
+    const gameLookup = { _id: new ObjectId(req.params.id) };
+    const removedGame = await db.collection("gamelist").deleteOne( gameLookup );
+    console.log(removedGame);
+    const data = await db.collection("gamelist").find({}).toArray();
+    res.json(data);
+});
 
 app.post('/api/addGameImage/', async (req, res) => {
     singleUpload(req, res, function(err, some) {
