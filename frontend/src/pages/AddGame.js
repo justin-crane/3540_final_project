@@ -12,7 +12,7 @@ export  function AddGame(){
 
     const [gameFormData, setGameFormData] = useState({
         name: "",
-        console: "",
+        gameConsole: "",
         img: "",
         condition: "",
         availability: "",
@@ -47,7 +47,7 @@ export  function AddGame(){
 
         let data = {
             name: gameFormData.name,
-            console: gameFormData.console,
+            gameConsole: gameFormData.console,
             condition: gameFormData.condition,
             availability: gameFormData.availability,
             notes: gameFormData.notes,
