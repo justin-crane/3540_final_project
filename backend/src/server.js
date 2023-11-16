@@ -67,6 +67,7 @@ app.get('/api/games/:id', async (req, res) => {
     }
 })
 
+
 app.post('/api/addGameImage/', async (req, res) => {
     singleUpload(req, res, function(err, some) {
         if (err) {
