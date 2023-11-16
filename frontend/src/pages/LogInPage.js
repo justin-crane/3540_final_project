@@ -32,12 +32,12 @@ export const LogInPage = () => {
 
     const onLogInClicked = async () => {
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('http://localhost:3001/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username: emailValue, password: passwordValue }),
+                body: JSON.stringify({ email: emailValue, password: passwordValue }),
             });
 
             const data = await response.json();
@@ -52,6 +52,7 @@ export const LogInPage = () => {
             setErrorMessage('Failed to connect to the server');
         }
     };
+
 
     const onLogOutClicked = () => {
         // Clear the token from local storage

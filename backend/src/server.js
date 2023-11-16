@@ -94,26 +94,7 @@ app.get('/api/google/oauth', async (req, res) => {
     Game Collection API
 
  */
-//commenting out for now as still working on
-/* app.get('/api/gamelist/', authenticateToken, async (req, res) => {
-    const userId = req.query.userId;
 
-    if (!userId) {
-        return res.status(400).send('User ID is required');
-    }
-
-    try {
-        const games = await db.collection('gamelist').find({ userId }).toArray();
-        if (games.length > 0){
-            res.json(games);
-        } else {
-            res.status(404).send('No games found for this user');
-        }
-    } catch (error) {
-        console.error('Error fetching user-specific games:', error);
-        res.status(500).send('Error fetching games');
-    }
-}); */
 app.get('/api/gamelist/', async (req, res) => {
     try {
         const games = await db.collection('gamelist').find({}).toArray();
@@ -138,31 +119,58 @@ app.get('/api/games/:id', async (req, res) => {
     }
 })
 
+// User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
     const { name, gameConsole, img, condition, availability, notes } = req.body;
-
-    // Extract the userId from request object, was attached by 'authenticateToken' middleware
-    // Ensure the JWT token contains the user ID
-    const userId = req.user.id;
+    const userId = req.user.id; // Extracted from the JWT token
 
     try {
-        // Added userId
         const result = await db.collection('gamelist').insertOne({
-            userId, name, gameConsole, img, condition, availability, notes
+            userId, // Associates the game with a user
+            name, gameConsole, img, condition, availability, notes
         });
-
-        console.log(result); //added for debugging
-
-        if (result.acknowledged === true) {
-            res.status(201).json({ message: 'Game added successfully', insertedId: result.insertedId });
-        } else {
-            throw new Error('Insert operation did not return a valid result');
-        }
+        res.status(201).json({ message: 'Game added successfully' });
     } catch (error) {
         console.error('Error adding game:', error);
         res.status(500).send('Error adding game');
     }
 });
+
+// User can delete game from their profile
+app.delete('/api/deletegame/:id', authenticateToken, async (req, res) => {
+    const gameId = req.params.id;
+    const userId = req.user.id; // Extracted from the JWT token
+
+    try {
+        const result = await db.collection('gamelist').deleteOne({ _id: new ObjectId(gameId), userId });
+        if (result.deletedCount === 0) {
+            return res.status(404).send('No game found with this id for the user');
+        }
+        res.status(200).send('Game deleted successfully');
+    } catch (error) {
+        console.error('Error deleting game:', error);
+        res.status(500).send('Error deleting game');
+    }
+});
+
+// User can modify a game on their profile
+app.put('/api/modifygame/:id', authenticateToken, async (req, res) => {
+    const gameId = req.params.id;
+    const userId = req.user.id; // Extracted from the JWT token
+    const updateData = req.body; // Data to update
+
+    try {
+        const result = await db.collection('gamelist').updateOne({ _id: new ObjectId(gameId), userId }, { $set: updateData });
+        if (result.matchedCount === 0) {
+            return res.status(404).send('No game found with this id for the user');
+        }
+        res.status(200).send('Game updated successfully');
+    } catch (error) {
+        console.error('Error updating game:', error);
+        res.status(500).send('Error updating game');
+    }
+});
+
 
 // User registration route
 app.post('/api/register', async (req, res) => {
@@ -213,6 +221,29 @@ app.post('/api/login', async (req, res) => {
     } catch (error) {
         console.error('Error logging in user:', error);
         res.status(500).send('Error logging in user');
+    }
+});
+
+// Fetch games for the authenticated user
+app.get('/api/usergames', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id; // Assuming the JWT token includes user's ID
+        const games = await db.collection('gamelist').find({ userId }).toArray();
+        res.json(games);
+    } catch (error) {
+        console.error('Error fetching user games:', error);
+        res.status(500).send('Error fetching user games');
+    }
+});
+
+app.get('/api/usergames/:userId', async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const games = await db.collection('gamelist').find({ userId }).toArray();
+        res.json(games);
+    } catch (error) {
+        console.error('Error fetching user games:', error);
+        res.status(500).send('Error fetching user games');
     }
 });
 
