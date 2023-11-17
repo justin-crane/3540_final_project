@@ -50,8 +50,8 @@ export  function AddGame(){
                 imgLoc = res.data.imageLocation;
             })
 
-        if (!imgLoc){   // TODO : set a default image if none is provided.
-            imgLoc = "TEST.png";
+        if (!imgLoc){
+            imgLoc = "/images/placeholder_image.png";
         }
 
         let data = {
@@ -74,9 +74,6 @@ export  function AddGame(){
     }
     return (
         <div className="App container-lg">
-            <nav>
-                <Link className="navbar bg-body-tertiary h1" to="/">See Games</Link>
-            </nav>
             <div className="w-75 mx-auto">
                 <h1>Submit a Game</h1>
 
