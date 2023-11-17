@@ -62,7 +62,7 @@ export  function AddGame(){
             forSale: gameFormData.forSale,
             price: gameFormData.formPrice,
             notes: gameFormData.formNotes,
-            dateAdded: new Date().getUTCDate(),
+            dateAdded: new Date(),
             username: "TODO",
             userID: "TODO",
             img: imgLoc,
