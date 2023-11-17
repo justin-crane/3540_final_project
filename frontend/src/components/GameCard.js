@@ -9,8 +9,18 @@ const GameCard = (args) => {
         game => game._id === gameId)
 
     return (
-        <Col key={game.name + game.notes + game.console}>
-            <Link to={`/games/${gameId}`}>
+        <Col
+            key={game.name + game.notes + game.console}
+            style={{
+                margin: "0px",
+                padding: "0px",
+                border: "0px",
+            }}
+        >
+            <Link
+                to={`/games/${gameId}`}
+                style={{ textDecoration: "none" }}
+            >
                 <Card
                     className={"hvr-grow-shadow"}
                     border={"dark"}
@@ -26,11 +36,47 @@ const GameCard = (args) => {
                               style={{
                                   minHeight:"70%",
                                   maxHeight:"400px" }}/>
+                    {game.forTrade === "true" || game.forTrade === true
+                        ? <Card.Text
+                            style={{
+                                position:"fixed",
+                                top:"3%",
+                                left:"3%",
+                                color: "#FFFFFF",
+                                background:"#d54d4d",
+                                fontSize: "1.2rem",
+                                padding: "0.3rem",
+                                borderRadius: "15px",
+                                userSelect: "none",
+                                filter: "drop-shadow(5px 5px 5px #00000055)"
+                            }}
+                            >Trade ✔︎</Card.Text>
+                        : <></>
+                        }
+                    {game.forSale === "true" || game.forSale === true
+                        ? <Card.Text
+                            style={{
+                                position:"fixed",
+                                top:"3%",
+                                right:"3%",
+                                color: "#3a3838",
+                                background:"#ece781",
+                                fontSize: "1.2rem",
+                                padding: "0.3rem",
+                                borderRadius: "15px",
+                                userSelect: "none",
+                                filter: "drop-shadow(5px 5px 5px #00000055)"
+                            }}
+                        >Sale ✔︎</Card.Text>
+                        : <></>
+                    }
                     <Card.Body style={{overflow:"scroll"}}>
                         <Card.Text>{game.name}</Card.Text>
                     </Card.Body>
                     <Card.Footer>
-                        <small className={"text-muted"}>Posted by: @username</small>
+                        <small className={"text-muted"}>
+                            Posted by: @{game.userInfo.username}
+                        </small>
                     </Card.Footer>
                 </Card>
             </Link>
