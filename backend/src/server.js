@@ -57,7 +57,6 @@ app.get('/api/hello/', async (req, res) => {
 
 /*
 
-
     OAuth
 
  */
@@ -124,8 +123,8 @@ app.get('/api/google/oauth', async (req, res) => {
 
 /*
 
-
     Game Collection API
+
  */
 
 app.get('/api/gamelist/', async (req, res) => {
@@ -174,7 +173,6 @@ app.put('/api/games/:id/update', async (req, res) => {
     }
 })
 
-
 app.delete('/api/games/:id/remove', async (req, res) => {
     const gameLookup = { _id: new ObjectId(req.params.id) };
     const removedGame = await db.collection("gamelist").deleteOne( gameLookup );
@@ -194,17 +192,20 @@ app.post('/api/addGameImage/', async (req, res) => {
 
 app.post('/api/addgame/', async (req, res) => {
 
-    const { name, console, img, condition, availability, notes } = req.body;
+    const { name, console, img, condition, price,
+        forTrade, forSale, userInfo, username, userID, dateAdded, notes } = req.body;
 
     let game = await db.collection('gamelist').insertOne({
-        name, console, img, condition, availability, notes
-    });
+        name, console, img, condition, forTrade, forSale,
+        userInfo, username, userID, dateAdded, notes });
     let gameArray = await db.collection('gamelist').find({}).toArray();
     if (gameArray){
         res.json(gameArray);
 
     } else {
         res.sendStatus(404);
+    }
+});
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {

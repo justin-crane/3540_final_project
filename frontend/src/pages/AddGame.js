@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import {useState} from "react";
 import axios from 'axios';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import {InputGroup, Stack, Form, Button} from 'react-bootstrap';
+
+
 
 export  function AddGame(){
 
     const [gameList, setGameList] = useState();
-
     const [file, setFile] = useState()
 
     const [gameFormData, setGameFormData] = useState({
@@ -15,16 +15,21 @@ export  function AddGame(){
         gameConsole: "",
         img: "",
         condition: "",
-        availability: "",
+        forTrade: false,
+        forSale: false,
+        price: 0,
+        username: "",
+        userID: "",
+        dateAdded: "",
         notes:""
     })
 
     function updateGameForm(e){
         const key = e.target.name;
-        const value = e.target.value;
+        let value = e.target.value;
+        console.log("ADD GAME KEY VALUE: " + key + ", " + value);
         setGameFormData({...gameFormData, [key]: value});
     }
-
     const handleFile = (e) => {
         const fileImg = e.target.files[0];
         setFile(fileImg)
@@ -45,15 +50,23 @@ export  function AddGame(){
                 imgLoc = res.data.imageLocation;
             })
 
+        if (!imgLoc){   // TODO : set a default image if none is provided.
+            imgLoc = "TEST.png";
+        }
+
         let data = {
             name: gameFormData.name,
-            gameConsole: gameFormData.console,
+            gameConsole: gameFormData.gameConsole,
             condition: gameFormData.condition,
-            availability: gameFormData.availability,
+            forTrade: gameFormData.forTrade,
+            forSale: gameFormData.forSale,
+            price: gameFormData.price,
             notes: gameFormData.notes,
+            dateAdded: new Date().getUTCDate(),
+            username: "TODO",
+            userID: "TODO",
             img: imgLoc,
         };
-
         const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)
         console.log(responseGames);
@@ -86,35 +99,68 @@ export  function AddGame(){
                     </Form.Group>
                     <Form.Group id="formCondition" controlId="formCondition">
                         <Form.Label></Form.Label>
-                        <Form.Control
+                        <Form.Select aria-label={"Condition Selection"}
                             type="text"
-                            placeholder="Condition"
                             name="condition"
-                            onChange={updateGameForm}/>
+                            onChange={updateGameForm}>
+                            <option selected={true} disabled={true}>Selection Condition: </option>
+                            <option value={1}>1 - Poor</option>
+                            <option value={2}>2 - Flawed</option>
+                            <option value={3}>3 - Some flaws</option>
+                            <option value={4}>4 - Near-mint</option>
+                            <option value={5}>5 - Mint</option>
+                        </Form.Select>
                     </Form.Group>
-                    <Form.Group id="formAvailability" controlId="formAvailability">
+                    <Form.Group id="forTrade" controlId="forTrade">
                         <Form.Label></Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Availability"
-                            name="availability"
-                            onChange={updateGameForm}/>
+                        <Form.Select aria-label={"For Trade Select"}
+                                     type="text"
+                                     name="forTrade"
+                                     onChange={updateGameForm}>
+                            <option selected={true} disabled={true}>For Trade?</option>
+                            <option value={false}>Not For Trade</option>
+                            <option value={true}>For Trade</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group id="forSale" controlId="forSale" className={"mb-4"}>
+                        <Form.Label></Form.Label>
+                        <Form.Select aria-label={"For Sale Select"}
+                                     type="text"
+                                     name="forSale"
+                                     onChange={updateGameForm}>
+                            <option selected={true} disabled={true}>For Sale?</option>
+                            <option value={false}>Not For Sale</option>
+                            <option value={true}>For Sale</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group id={"formPrice"} controlId={"formPrice"}>
+                        <Stack direction={"horizontal"}>
+                            <Form.Label></Form.Label>
+                            <InputGroup.Text>Price: $</InputGroup.Text>
+                            <Form.Control
+                                aria-label={"Price (to the nearest dollar"}
+                                onChange={updateGameForm}
+                                label={"price"}
+                                name={"price"}
+                            />
+                            <InputGroup.Text>.00</InputGroup.Text>
+                        </Stack>
                     </Form.Group>
                     <Form.Group id="formNotes" controlId="formNotes">
                         <Form.Label></Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Notes"
+                            placeholder="Conditon notes, etc... "
                             name="notes"
                             onChange={updateGameForm}/>
                     </Form.Group>
                     <Form.Group id="formIMG" controlId="formIMG">
-                        <Form.Label></Form.Label>
+                        <Form.Label className={"pt-5"}>Image Upload: </Form.Label>
                         <Form.Control
                             formAction="/upload_files"
                             type="file"
                             encType="multipart/form-data"
-                            placeholder="Image (Placeholder, just add text for now)"
+                            label="Image"
                             name="img"
                             onChange={handleFile}
                         />
