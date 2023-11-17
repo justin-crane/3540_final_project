@@ -1,16 +1,13 @@
 import 'dotenv/config';
-import express from 'express';
 import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import cors from 'cors';
 import { db, run } from "./db.js";
-
 import express from "express";
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import AWS from 'aws-sdk';
 import {ObjectId} from 'mongodb';
-
 import fetch from 'node-fetch';
 import bcrypt from 'bcrypt';
 
@@ -156,9 +153,16 @@ app.put('/api/games/:id/update', async (req, res) => {
     const newGameInfo = {
         $set: {
             "name": req.body.name,
-            "console": req.body.console,
+            "gameConsole": req.body.gameConsole,
             "condition": req.body.condition,
-            "availability": req.body.availability,
+            "forTrade": req.body.forTrade,
+            "forSale": req.body.forSale,
+            "price": req.body.price,
+            "userInfo": {
+                "username": req.body.username,
+                "userID": req.body.userID,
+            },
+            "dateAdded": req.body.dateAdded,
             "notes": req.body.notes,
             "img": req.body.img
         }
@@ -192,12 +196,18 @@ app.post('/api/addGameImage/', async (req, res) => {
 
 app.post('/api/addgame/', async (req, res) => {
 
-    const { name, console, img, condition, price,
+    let { name, gameConsole, img, condition, price,
         forTrade, forSale, userInfo, username, userID, dateAdded, notes } = req.body;
 
+    userInfo = {
+        "username": username,
+        "userID": userID
+    }
+
     let game = await db.collection('gamelist').insertOne({
-        name, console, img, condition, forTrade, forSale,
-        userInfo, username, userID, dateAdded, notes });
+        name, gameConsole, img, condition, forTrade, forSale,
+        userInfo, price, dateAdded, notes
+    });
     let gameArray = await db.collection('gamelist').find({}).toArray();
     if (gameArray){
         res.json(gameArray);
@@ -209,13 +219,21 @@ app.post('/api/addgame/', async (req, res) => {
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
-    const { name, gameConsole, img, condition, availability, notes } = req.body;
+    let { name, gameConsole, img, condition, price,
+        forTrade, forSale, userInfo, username, dateAdded, notes } = req.body;
+
     const userId = req.user.id; // Extracted from the JWT token
+
+    userInfo = {
+        "username": username,
+        "userID": userId
+    }
 
     try {
         const result = await db.collection('gamelist').insertOne({
             userId, // Associates the game with a user
-            name, gameConsole, img, condition, availability, notes
+            name, gameConsole, img, condition, forTrade, forSale,
+            userInfo, price, dateAdded, notes
         });
         res.status(201).json({ message: 'Game added successfully' });
     } catch (error) {

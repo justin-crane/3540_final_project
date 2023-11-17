@@ -11,17 +11,17 @@ export  function AddGame(){
     const [file, setFile] = useState()
 
     const [gameFormData, setGameFormData] = useState({
-        name: "",
-        gameConsole: "",
+        formName: "",
+        formConsole: "",
         img: "",
-        condition: "",
+        formCondition: "",
         forTrade: false,
         forSale: false,
-        price: 0,
+        formPrice: 0,
         username: "",
         userID: "",
         dateAdded: "",
-        notes:""
+        formNotes:""
     })
 
     function updateGameForm(e){
@@ -55,13 +55,13 @@ export  function AddGame(){
         }
 
         let data = {
-            name: gameFormData.name,
-            gameConsole: gameFormData.gameConsole,
-            condition: gameFormData.condition,
+            name: gameFormData.formName,
+            gameConsole: gameFormData.formConsole,
+            condition: gameFormData.formCondition,
             forTrade: gameFormData.forTrade,
             forSale: gameFormData.forSale,
-            price: gameFormData.price,
-            notes: gameFormData.notes,
+            price: gameFormData.formPrice,
+            notes: gameFormData.formNotes,
             dateAdded: new Date().getUTCDate(),
             username: "TODO",
             userID: "TODO",
@@ -83,7 +83,7 @@ export  function AddGame(){
                         <Form.Control
                             type="text"
                             placeholder="Game Name"
-                            name="name"
+                            name="formName"
                             onChange={updateGameForm}/>
                     </Form.Group>
                     <Form.Group id="formConsole" controlId="formConsole">
@@ -91,14 +91,14 @@ export  function AddGame(){
                         <Form.Control
                             type="text"
                             placeholder="Console"
-                            name="console"
+                            name="formConsole"
                             onChange={updateGameForm}/>
                     </Form.Group>
                     <Form.Group id="formCondition" controlId="formCondition">
                         <Form.Label></Form.Label>
                         <Form.Select aria-label={"Condition Selection"}
                             type="text"
-                            name="condition"
+                            name="formCondition"
                             onChange={updateGameForm}>
                             <option selected={true} disabled={true}>Selection Condition: </option>
                             <option value={1}>1 - Poor</option>
@@ -138,7 +138,7 @@ export  function AddGame(){
                                 aria-label={"Price (to the nearest dollar"}
                                 onChange={updateGameForm}
                                 label={"price"}
-                                name={"price"}
+                                name={"formPrice"}
                             />
                             <InputGroup.Text>.00</InputGroup.Text>
                         </Stack>
@@ -148,7 +148,7 @@ export  function AddGame(){
                         <Form.Control
                             type="text"
                             placeholder="Conditon notes, etc... "
-                            name="notes"
+                            name="formNotes"
                             onChange={updateGameForm}/>
                     </Form.Group>
                     <Form.Group id="formIMG" controlId="formIMG">

@@ -22,7 +22,7 @@ const GameCard = (args) => {
                         maxWidth:"300px",}}
                       key={game.name+game._id.id+game.notes}>
                     <Card.Img variant={"top"}
-                              src={`/images/${game.img}`}
+                              src={game.img}
                               style={{
                                   minHeight:"70%",
                                   maxHeight:"400px" }}/>
