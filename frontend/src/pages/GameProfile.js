@@ -1,7 +1,7 @@
 import {useParams} from "react-router-dom";
 import Container from 'react-bootstrap/Container'
 import Image from "react-bootstrap/Image";
-import {Card, Col, Row} from "react-bootstrap";
+import {Card, Col, OverlayTrigger, Row, Stack, Tooltip} from "react-bootstrap";
 
 const GameProfile = (args) => {
     const {gameList} = args;
@@ -15,42 +15,46 @@ const GameProfile = (args) => {
             <Row className={"justify-content-md-center"}>
             <Col lg={"5"} md={"auto"} className={"mx-auto"}>
                 <Image src={game.img} className={"h-75"} alt={game.name + " cover image."} fluid rounded/>
-                {game.forTrade === "true" || game.forTrade === true
-                    ? <Card.Text
-                        style={{
-                            position:"absolute",
-                            top:"3%",
-                            left:"3%",
-                            color: "#FFFFFF",
-                            background:"#d54d4d",
-                            fontSize: "1.2rem",
-                            padding: "0.3rem",
-                            borderRadius: "15px",
-                            cursor: "default",
-                            userSelect: "none",
-                            filter: "drop-shadow(5px 5px 5px #00000055)"
-                        }}
-                    >Trade ✔︎</Card.Text>
-                    : <></>
-                }
-                {game.forSale === "true" || game.forSale === true
-                    ? <Card.Text
-                        style={{
-                            position:"absolute",
-                            top:"3%",
-                            right:"30%",
-                            color: "#3a3838",
-                            background:"#ece781",
-                            fontSize: "1.2rem",
-                            padding: "0.3rem",
-                            borderRadius: "15px",
-                            cursor: "default",
-                            userSelect: "none",
-                            filter: "drop-shadow(5px 5px 5px #00000055)"
-                        }}
-                    >Sale ✔︎</Card.Text>
-                    : <></>
-                }
+                <Stack direction="horizontal" gap={2}
+                       style={{
+                           position: "absolute",
+                           top: "2%",
+                           left: "3%"
+                       }}>
+                    {game.forTrade === "true" || game.forTrade === true
+                        ? <OverlayTrigger
+                            overlay={
+                                <Tooltip id={`tooltip${game.name}`}>
+                                    For Trade!
+                                </Tooltip>
+                            }>
+                            <Card.Img variant={"top"}
+                                      src={"/images/for_trade_icon.png"}
+                                      style={{
+                                          width: "15%",
+                                          filter: "drop-shadow(5px 5px 5px #00000055)"
+                                      }}/>
+                        </OverlayTrigger>
+
+                        : <></>
+                    }
+                    {game.forSale === "true" || game.forSale === true
+                        ? <OverlayTrigger
+                            overlay={
+                                <Tooltip id={`tooltip${game.name}`}>
+                                    For Sale!
+                                </Tooltip>
+                            }>
+                            <Card.Img variant={"top"}
+                                      src={"/images/for_sale_icon.png"}
+                                      style={{
+                                          width: "15%",
+                                          filter: "drop-shadow(5px 5px 5px #00000055)"
+                                      }}/>
+                        </OverlayTrigger>
+                        : <></>
+                    }
+                </Stack>
             </Col>
             <Col lg={"5"} md={"auto"}>
                 <h1>{game.name}</h1>
