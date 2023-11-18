@@ -1,15 +1,10 @@
-import { Link } from "react-router-dom";
 import {useState} from "react";
 import axios from 'axios';
 import {InputGroup, Stack, Form, Button} from 'react-bootstrap';
 
-
-
 export  function AddGame(){
-
     const [gameList, setGameList] = useState();
     const [file, setFile] = useState()
-
     const [gameFormData, setGameFormData] = useState({
         formName: "",
         formConsole: "",
@@ -36,19 +31,18 @@ export  function AddGame(){
     }
     const submit = async (e) => {
         e.preventDefault();
-
         const formData = new FormData();
         let imgLoc;
         formData.append("img", file)
 
-        const response = await axios.post('/api/addGameImage', formData,{
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
-            .then(res => {
-                imgLoc = res.data.imageLocation;
-            })
+        // const response = await axios.post('/api/addGameImage', formData,{
+        //     headers: {
+        //         'Content-Type': 'multipart/form-data'
+        //     }
+        // })
+        //     .then(res => {
+        //         imgLoc = res.data.imageLocation;
+        //     })
 
         if (!imgLoc){
             imgLoc = "/images/placeholder_image.png";
@@ -67,10 +61,53 @@ export  function AddGame(){
             userID: "TODO",
             img: imgLoc,
         };
-        const responseGames = await axios.post(`/api/addgame`, data);
+        //getProductPrice(data.name);
+
+        const gameRes = await axios.get(`http://localhost:3000/api/price/${data.name}`);
+        console.log("GAME ID: ",gameRes.data.id);
+        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
+
+        if (!data.price){
+            switch(gameFormData.formCondition){
+                case "1":
+                    data.price = gameRes.data['loose-price'];
+                    console.log("SETTING PRICE AS CONDITION 1");
+                    break;
+                case "2":
+                    data.price = gameRes.data['retail-cib-buy'];
+                    console.log("SETTING PRICE AS CONDITION 2");
+                    break;
+                case "3":
+                    data.price = gameRes.data['retail-cib-sell'];
+                    console.log("SETTING PRICE AS CONDITION 3");
+                    break;
+                case "4":
+                    data.price = gameRes.data['retail-new-buy'];
+                    console.log("SETTING PRICE AS CONDITION 4");
+                    break;
+                case "5":
+                    data.price = gameRes.data['new-price'];
+                    console.log("SETTING PRICE AS CONDITION 5");
+                    break;
+                default:
+                    data.price = gameRes.data['loose-price'];
+                    console.log("SETTING PRICE AS CONDITION DEFAULT");
+                    break;
+            }
+        }
+
+        console.log("PRICE RETURN IS: $" + (data.price/100))
+        //const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)
-        console.log(responseGames);
-        e.target.reset();
+        //console.log(responseGames);
+        //e.target.reset();
+
+/*
+        TODO :
+            - Integrate price data pulled from API into the data sent to our
+            database.
+            -
+ */
     }
     return (
         <div className="App container-lg">

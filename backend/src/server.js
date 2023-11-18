@@ -10,6 +10,7 @@ import AWS from 'aws-sdk';
 import {ObjectId} from 'mongodb';
 import fetch from 'node-fetch';
 import bcrypt from 'bcrypt';
+import axios from "axios";
 
 
 const PORT = process.env.PORT || 3001;
@@ -353,6 +354,22 @@ app.get('/api/usergames/:userId', async (req, res) => {
         res.status(500).send('Error fetching user games');
     }
 });
+
+
+/*
+
+    PriceCharting API Integration
+
+ */
+    const PRICE_API_KEY = process.env.PRICE_API_KEY;
+    app.get('/api/price/:gameName', async (req, res) => {
+        const { gameName } = req.params;
+        const gameRes = await axios.get(
+                    `https://www.pricecharting.com/api/product?t=${PRICE_API_KEY}&q=${gameName}`)
+        console.log("GAME ID RETURN: ", gameRes.data.id)
+        console.log(gameRes.data.id)
+        res.json(gameRes.data);
+    });
 
 
 run(()=>{

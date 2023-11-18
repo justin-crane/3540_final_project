@@ -15,7 +15,6 @@ function App() {
   //code
 
     let [gameList, setGameList] = useState();
-
     useEffect(() => {
         const loadGames = async () => {
             const response = await axios.get(`http://localhost:3000/api/gamelist/`);
