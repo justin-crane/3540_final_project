@@ -64,29 +64,26 @@ export  function AddGame(){
         //getProductPrice(data.name);
 
         const gameRes = await axios.get(`http://localhost:3000/api/price/${data.name}`);
-        console.log("GAME ID: ",gameRes.data.id);
-        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
-
         if (!data.price){
             switch(gameFormData.formCondition){
                 case "1":
-                    data.price = gameRes.data['loose-price'];
+                    data.price = (gameRes.data['loose-price']/100);
                     console.log("SETTING PRICE AS CONDITION 1");
                     break;
                 case "2":
-                    data.price = gameRes.data['retail-cib-buy'];
+                    data.price = (gameRes.data['retail-cib-buy']/100);
                     console.log("SETTING PRICE AS CONDITION 2");
                     break;
                 case "3":
-                    data.price = gameRes.data['retail-cib-sell'];
+                    data.price = (gameRes.data['retail-cib-sell']/100);
                     console.log("SETTING PRICE AS CONDITION 3");
                     break;
                 case "4":
-                    data.price = gameRes.data['retail-new-buy'];
+                    data.price = (gameRes.data['retail-new-buy']/100);
                     console.log("SETTING PRICE AS CONDITION 4");
                     break;
                 case "5":
-                    data.price = gameRes.data['new-price'];
+                    data.price = (gameRes.data['new-price']/100);
                     console.log("SETTING PRICE AS CONDITION 5");
                     break;
                 default:
@@ -95,8 +92,18 @@ export  function AddGame(){
                     break;
             }
         }
-
-        console.log("PRICE RETURN IS: $" + (data.price/100))
+        console.log("GAME ID: ",gameRes.data.id);
+        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
+        console.log("GAME GENRE NAME: ", gameRes.data['genre'])
+        console.log("GAME RELEASE DATE: ", gameRes.data['release-date'])
+        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
+        console.log("GAME DATE ADDED: ", data.dateAdded)
+        console.log("PRICE RETURN IS: $" + data.price)
+        data['genre'] = gameRes.data['genre'];
+        data['release-date'] = gameRes.data['release-date'];
+        data['gameConsole'] = gameRes.data['console-name'];
+        data['genre'] = gameRes.data['genre'];
+        console.log(data);
         //const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)
         //console.log(responseGames);
@@ -106,7 +113,8 @@ export  function AddGame(){
         TODO :
             - Integrate price data pulled from API into the data sent to our
             database.
-            -
+            - Have search include console along with game name, and then loop through
+                products and return result by console + game name
  */
     }
     return (
