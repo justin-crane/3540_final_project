@@ -16,7 +16,6 @@ const GameCollection = (args) => {
                         ))}
             </Row>
         </>
-
     );
 }
 

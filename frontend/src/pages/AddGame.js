@@ -1,10 +1,17 @@
 import {useState} from "react";
-import axios from 'axios';
 import {InputGroup, Stack, Form, Button} from 'react-bootstrap';
+import {getGame} from "../components/PriceChartAPIProcess";
+import axios from "axios";
 
 export  function AddGame(){
     const [gameList, setGameList] = useState();
-    const [file, setFile] = useState()
+    const [file, setFile] = useState();
+    const consoleList = ['Atari', 'Commodore 64', 'Famicom', 'Gameboy', 'Gameboy Color',
+        'Gameboy Advance', 'Gamecube', 'NES', 'Neo Geo', 'N-Gage', 'Nintendo 64',
+        'Nintendo 3DS', 'Nintendo DS', 'Nintendo Switch', 'PC', 'PSP', 'Playstation',
+        'Playstation 2', 'Playstation 3', 'Playstation 4', 'Playstation 5', 'Sega Dreamcast',
+        'Sega Game Gear', 'Sega Genesis', 'Sega Master System', 'Sega Saturn', 'Super Famicom',
+        'Super Nintendo', 'Virtual Boy', 'Xbox', 'Xbox 360', 'Xbox One', 'Xbox Series X']
     const [gameFormData, setGameFormData] = useState({
         formName: "",
         formConsole: "",
@@ -18,7 +25,6 @@ export  function AddGame(){
         dateAdded: "",
         formNotes:""
     })
-
     function updateGameForm(e){
         const key = e.target.name;
         let value = e.target.value;
@@ -40,9 +46,9 @@ export  function AddGame(){
         //         'Content-Type': 'multipart/form-data'
         //     }
         // })
-        //     .then(res => {
-        //         imgLoc = res.data.imageLocation;
-        //     })
+        // .then(res => {
+        //     imgLoc = res.data.imageLocation;
+        // })
 
         if (!imgLoc){
             imgLoc = "/images/placeholder_image.png";
@@ -61,67 +67,19 @@ export  function AddGame(){
             userID: "TODO",
             img: imgLoc,
         };
-        //getProductPrice(data.name);
 
-        const gameRes = await axios.get(`http://localhost:3000/api/price/${data.name}`);
-        if (!data.price){
-            switch(gameFormData.formCondition){
-                case "1":
-                    data.price = (gameRes.data['loose-price']/100);
-                    console.log("SETTING PRICE AS CONDITION 1");
-                    break;
-                case "2":
-                    data.price = (gameRes.data['retail-cib-buy']/100);
-                    console.log("SETTING PRICE AS CONDITION 2");
-                    break;
-                case "3":
-                    data.price = (gameRes.data['retail-cib-sell']/100);
-                    console.log("SETTING PRICE AS CONDITION 3");
-                    break;
-                case "4":
-                    data.price = (gameRes.data['retail-new-buy']/100);
-                    console.log("SETTING PRICE AS CONDITION 4");
-                    break;
-                case "5":
-                    data.price = (gameRes.data['new-price']/100);
-                    console.log("SETTING PRICE AS CONDITION 5");
-                    break;
-                default:
-                    data.price = gameRes.data['loose-price'];
-                    console.log("SETTING PRICE AS CONDITION DEFAULT");
-                    break;
-            }
-        }
-        console.log("GAME ID: ",gameRes.data.id);
-        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
-        console.log("GAME GENRE NAME: ", gameRes.data['genre'])
-        console.log("GAME RELEASE DATE: ", gameRes.data['release-date'])
-        console.log("GAME PRODUCT NAME: ", gameRes.data['product-name'])
-        console.log("GAME DATE ADDED: ", data.dateAdded)
-        console.log("PRICE RETURN IS: $" + data.price)
-        data['genre'] = gameRes.data['genre'];
-        data['release-date'] = gameRes.data['release-date'];
-        data['gameConsole'] = gameRes.data['console-name'];
-        data['genre'] = gameRes.data['genre'];
-        console.log(data);
+        data = getGame(data, gameFormData);
+        //console.log(data);
+
         //const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)
-        //console.log(responseGames);
         //e.target.reset();
 
-/*
-        TODO :
-            - Integrate price data pulled from API into the data sent to our
-            database.
-            - Have search include console along with game name, and then loop through
-                products and return result by console + game name
- */
     }
     return (
         <div className="App container-lg">
             <div className="w-75 mx-auto">
                 <h1>Submit a Game</h1>
-
                 <Form onSubmit={submit} >
                     <Form.Group id="formName" controlId="formName">
                         <Form.Label></Form.Label>
@@ -133,11 +91,15 @@ export  function AddGame(){
                     </Form.Group>
                     <Form.Group id="formConsole" controlId="formConsole">
                         <Form.Label></Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Console"
-                            name="formConsole"
-                            onChange={updateGameForm}/>
+                        <Form.Select
+                                required
+                                aria-label={"Console Selection"}
+                                type="text"
+                                name="formConsole"
+                                onChange={updateGameForm}>
+                            <option selected={true} disabled={true}>Select Console: </option>
+                            {consoleList.map((item) => (<option value={item}>{item}</option>))}
+                        </Form.Select>
                     </Form.Group>
                     <Form.Group id="formCondition" controlId="formCondition">
                         <Form.Label></Form.Label>
@@ -146,11 +108,11 @@ export  function AddGame(){
                             name="formCondition"
                             onChange={updateGameForm}>
                             <option selected={true} disabled={true}>Selection Condition: </option>
-                            <option value={1}>1 - Poor</option>
-                            <option value={2}>2 - Flawed</option>
-                            <option value={3}>3 - Some flaws</option>
-                            <option value={4}>4 - Near-mint</option>
-                            <option value={5}>5 - Mint</option>
+                            <option value={1}>1 - Loose/No Original Box/Poor Condition</option>
+                            <option value={2}>2 - Box Only/Manual Only/Flawed</option>
+                            <option value={3}>3 - Has Original Boxing/Some Minor Flaws</option>
+                            <option value={4}>4 - Near-mint Condition</option>
+                            <option value={5}>5 - Mint/New</option>
                         </Form.Select>
                     </Form.Group>
                     <Form.Group id="forTrade" controlId="forTrade">
@@ -187,6 +149,9 @@ export  function AddGame(){
                             />
                             <InputGroup.Text>.00</InputGroup.Text>
                         </Stack>
+                        <Form.Text
+                            style={{fontSize:"0.75rem", textAlign:"left"}}
+                        >*Price will generate based on game condition if no price is entered here.</Form.Text>
                     </Form.Group>
                     <Form.Group id="formNotes" controlId="formNotes">
                         <Form.Label></Form.Label>

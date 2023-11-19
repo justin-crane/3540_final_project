@@ -361,15 +361,20 @@ app.get('/api/usergames/:userId', async (req, res) => {
     PriceCharting API Integration
 
  */
-    const PRICE_API_KEY = process.env.PRICE_API_KEY;
-    app.get('/api/price/:gameName', async (req, res) => {
-        const { gameName } = req.params;
-        const gameRes = await axios.get(
-                    `https://www.pricecharting.com/api/product?t=${PRICE_API_KEY}&q=${gameName}`)
-        console.log("GAME ID RETURN: ", gameRes.data.id)
-        console.log(gameRes.data.id)
-        res.json(gameRes.data);
-    });
+
+const PRICE_API_KEY = process.env.PRICE_API_KEY;
+app.post('/api/price/:gameName/:consoleName', async (req, res) => {
+    const {gameName, consoleName} = req.params;
+
+    const gameRes = await axios.get(
+        `https://www.pricecharting.com/api/products?t=${PRICE_API_KEY}&q=${gameName}`)
+
+    const gameReturn = gameRes.data['products'].find((game) =>
+        game['console-name'] === consoleName
+    )
+
+    res.json(gameReturn);
+})
 
 
 run(()=>{
