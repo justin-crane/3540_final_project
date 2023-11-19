@@ -15,7 +15,7 @@ export  function AddGame(){
     const [gameFormData, setGameFormData] = useState({
         formName: "",
         formConsole: "",
-        img: "",
+        img: null,
         formCondition: "",
         forTrade: false,
         forSale: false,
@@ -34,6 +34,7 @@ export  function AddGame(){
     const handleFile = (e) => {
         const fileImg = e.target.files[0];
         setFile(fileImg)
+        updateGameForm(e);
     }
     const submit = async (e) => {
         e.preventDefault();
@@ -41,20 +42,18 @@ export  function AddGame(){
         let imgLoc;
         formData.append("img", file)
 
-        if (!imgLoc){
+        if (!gameFormData.img){
             imgLoc = "/images/placeholder_image.png";
+        } else {
+            const response = await axios.post('/api/addGameImage', formData,{
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then(res => {
+                    imgLoc = res.data.imageLocation;
+                })
         }
-
-        // const response = await axios.post('/api/addGameImage', formData,{
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // })
-        // .then(res => {
-        //     imgLoc = res.data.imageLocation;
-        // })
-
-
 
         let data = {
             name: gameFormData.formName,
@@ -70,20 +69,15 @@ export  function AddGame(){
             img: imgLoc,
         };
 
-        /*
-        *       TODO: This is throwing error into PriceChartAPIProcess. Data is returning fine, but error
-        *           somehow still gets thrown. Need to sus out why. Proper game and console info is being
-        *           passed correctly.
-        * */
-
-        getGame(data, gameFormData)
-            .then(res => console.log(data = res)).catch(e => console.log(e))
-
-        console.log("ADD GAME RETURN DATA: ", data);
-
-        //const responseGames = await axios.post(`/api/addgame`, data);
-        alert(`${gameFormData.name} submitted successfully.`)
-        //e.target.reset();
+        const getGameFromAPI = async () => {
+            await getGame(data, gameFormData)
+                .then(res => console.log(data = res)).catch(e => console.log(e))
+            await console.log("ADD GAME RETURN DATA: ", data);
+            const responseGames = await axios.post(`/api/addgame`, data);
+            await alert(`${data.name} submitted successfully.`)
+            await e.target.reset();
+        };
+        getGameFromAPI().catch((e) => console.log(e));
 
     }
     return (
@@ -106,9 +100,10 @@ export  function AddGame(){
                                 aria-label={"Console Selection"}
                                 type="text"
                                 name="formConsole"
+                                defaultValue={0}
                                 onChange={updateGameForm}>
-                            <option selected={true} disabled={true}>Select Console: </option>
-                            {consoleList.map((item) => (<option value={item}>{item}</option>))}
+                            <option value={0} disabled={true}>Select Console: </option>
+                            {consoleList.map((item) => (<option key={item} value={item}>{item}</option>))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group id="formCondition" controlId="formCondition">
@@ -116,8 +111,9 @@ export  function AddGame(){
                         <Form.Select aria-label={"Condition Selection"}
                             type="text"
                             name="formCondition"
+                            defaultValue={0}
                             onChange={updateGameForm}>
-                            <option selected={true} disabled={true}>Selection Condition: </option>
+                            <option value={0} disabled={true}>Selection Condition: </option>
                             <option value={1}>1 - Loose/No Original Box/Poor Condition</option>
                             <option value={2}>2 - Box Only/Manual Only/Flawed</option>
                             <option value={3}>3 - Has Original Boxing/Some Minor Flaws</option>
@@ -130,8 +126,9 @@ export  function AddGame(){
                         <Form.Select aria-label={"For Trade Select"}
                                      type="text"
                                      name="forTrade"
+                                     defaultValue={0}
                                      onChange={updateGameForm}>
-                            <option selected={true} disabled={true}>For Trade?</option>
+                            <option value={0} disabled={true}>For Trade?</option>
                             <option value={false}>Not For Trade</option>
                             <option value={true}>For Trade</option>
                         </Form.Select>
@@ -141,8 +138,9 @@ export  function AddGame(){
                         <Form.Select aria-label={"For Sale Select"}
                                      type="text"
                                      name="forSale"
+                                     defaultValue={0}
                                      onChange={updateGameForm}>
-                            <option selected={true} disabled={true}>For Sale?</option>
+                            <option value={0} disabled={true}>For Sale?</option>
                             <option value={false}>Not For Sale</option>
                             <option value={true}>For Sale</option>
                         </Form.Select>

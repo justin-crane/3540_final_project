@@ -3,6 +3,12 @@ import Container from 'react-bootstrap/Container'
 import Image from "react-bootstrap/Image";
 import {Card, Col, OverlayTrigger, Row, Stack, Tooltip} from "react-bootstrap";
 
+/*
+*
+*   TODO: - Display the return information of this game in a better layout.
+*
+* */
+
 const GameProfile = (args) => {
     const {gameList} = args;
     const {gameId} = useParams();

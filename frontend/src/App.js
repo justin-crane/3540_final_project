@@ -24,8 +24,6 @@ function App() {
         loadGames().catch((e) => console.log(e));
     }, []);
 
-    console.log(gameList);
-
     if (!gameList){
         setGameList([]);
     }
