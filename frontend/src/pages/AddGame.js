@@ -41,6 +41,10 @@ export  function AddGame(){
         let imgLoc;
         formData.append("img", file)
 
+        if (!imgLoc){
+            imgLoc = "/images/placeholder_image.png";
+        }
+
         // const response = await axios.post('/api/addGameImage', formData,{
         //     headers: {
         //         'Content-Type': 'multipart/form-data'
@@ -50,9 +54,7 @@ export  function AddGame(){
         //     imgLoc = res.data.imageLocation;
         // })
 
-        if (!imgLoc){
-            imgLoc = "/images/placeholder_image.png";
-        }
+
 
         let data = {
             name: gameFormData.formName,
@@ -68,8 +70,16 @@ export  function AddGame(){
             img: imgLoc,
         };
 
-        data = getGame(data, gameFormData);
-        //console.log(data);
+        /*
+        *       TODO: This is throwing error into PriceChartAPIProcess. Data is returning fine, but error
+        *           somehow still gets thrown. Need to sus out why. Proper game and console info is being
+        *           passed correctly.
+        * */
+
+        getGame(data, gameFormData)
+            .then(res => console.log(data = res)).catch(e => console.log(e))
+
+        console.log("ADD GAME RETURN DATA: ", data);
 
         //const responseGames = await axios.post(`/api/addgame`, data);
         alert(`${gameFormData.name} submitted successfully.`)

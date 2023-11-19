@@ -1,4 +1,5 @@
 import axios from "axios";
+let dataReturn;
 
 export const getGame = async (data, gameFormData) => {
     try {
@@ -37,9 +38,11 @@ export const getGame = async (data, gameFormData) => {
         data['release-date'] = res.data['release-date'];
         data['gameConsole'] = res.data['console-name'];
         data['genre'] = res.data['genre'];
-        console.log(data);
-        return data;
+        dataReturn = data;
+
     } catch (e) {
         console.log(e);
     }
+
+    return dataReturn;
 }
