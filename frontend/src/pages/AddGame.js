@@ -1,7 +1,8 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {InputGroup, Stack, Form, Button} from 'react-bootstrap';
 import {getGame} from "../components/PriceChartAPIProcess";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 export  function AddGame(){
     const [gameList, setGameList] = useState();
@@ -25,6 +26,16 @@ export  function AddGame(){
         dateAdded: "",
         formNotes:""
     })
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check if the user is authenticated
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // If no token is found, redirect to the login page
+            navigate('/login');
+        }
+    }, [navigate]);
     function updateGameForm(e){
         const key = e.target.name;
         let value = e.target.value;
@@ -79,6 +90,10 @@ export  function AddGame(){
         };
         getGameFromAPI().catch((e) => console.log(e));
 
+    }
+    if (!localStorage.getItem('token')) {
+        // If the user is not authenticated, display a message
+        return <div>Please log in to add a game</div>;
     }
     return (
         <div className="App container-lg">
