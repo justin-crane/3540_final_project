@@ -81,6 +81,7 @@ const googleOauthURL = getGoogleOauthURL();
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
+    console.log('Authorization Header:', authHeader); //debugging
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) return res.sendStatus(401);
 
@@ -101,23 +102,36 @@ app.get('/api/google/oauthURL', (req, res) => {
 app.get('/api/google/oauth', async (req, res) => {
     try {
         const { code } = req.query;
+        console.log("Authorization code:", code); // Log the authorization code
+
         const { tokens } = await oauthClient.getToken(code);
+        console.log("Tokens received:", tokens); // Log the received tokens
 
         const accessToken = tokens.access_token;
         const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`);
         const profile = await response.json();
 
-        // Create or update user in database, create JWT token
-        const token = jwt.sign({ email: profile.email, name: profile.name }, process.env.JWT_SECRET, { expiresIn: '2d' });
+        // Check if user exists, if not, create a new one
+        let user = await db.collection('users').findOne({ email: profile.email });
+        if (!user) {
+            let result = await db.collection('users').insertOne({
+                email: profile.email,
+                username: profile.name,
+            });
+            user = { _id: result.insertedId, email: profile.email, username: profile.name };
+        }
+
+        // Generate JWT token with user ID
+        const token = jwt.sign({ id: user._id, email: profile.email }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
         // Redirect to frontend with JWT
         res.redirect(`http://localhost:3000?token=${token}`);
     } catch (error) {
         console.error('Error during Google OAuth:', error);
+        console.log("Error details:", error.message); // More detailed error logging
         res.status(500).json({ message: 'Error during Google OAuth' });
     }
 });
-
 
 /*
 
@@ -343,18 +357,18 @@ app.get('/api/usergames', authenticateToken, async (req, res) => {
         res.status(500).send('Error fetching user games');
     }
 });
-
-app.get('/api/usergames/:userId', async (req, res) => {
+/*
+app.get('/api/usergames/:userId', authenticateToken, async (req, res) => {
     const { userId } = req.params;
     try {
-        const games = await db.collection('gamelist').find({ userId }).toArray();
+        const games = await db.collection('gamelist').find({ 'userInfo.userID': userId }).toArray();
         res.json(games);
     } catch (error) {
         console.error('Error fetching user games:', error);
         res.status(500).send('Error fetching user games');
     }
 });
-
+*/
 
 /*
 

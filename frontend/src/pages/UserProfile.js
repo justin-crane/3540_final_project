@@ -3,20 +3,43 @@ import axios from 'axios';
 
 const UserProfile = () => {
     const [games, setGames] = useState([]);
+    const [userData, setUserData] = useState(null);  // Declare userData state
     const [loading, setLoading] = useState(true);
     const [editingGame, setEditingGame] = useState(null);
     const [formData, setFormData] = useState({
         name: '', gameConsole: '', img: '', condition: '', availability: '', notes: ''
     });
 
-    // Using mock user's ID from mongo
-    const mockUserId = "6554fadb5f96f41156f57286";
-    const fetchGames = async () => {
-        const token = localStorage.getItem('token'); // Gets the token from local storage
+    const fetchUserData = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
         try {
-            const response = await axios.get('/api/usergames', {
+            const response = await axios.get('http://localhost:3001/api/user', {
                 headers: {
-                    Authorization: `Bearer ${token}` // Includes the token in the request
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setUserData(response.data);
+        } catch (error) {
+            console.error('Error fetching user data', error);
+        }
+    };
+
+    const fetchGames = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        try {
+            const response = await axios.get(`/api/usergames`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
             });
             setGames(response.data);
@@ -25,6 +48,12 @@ const UserProfile = () => {
             console.error('Error fetching games:', error);
         }
     };
+
+    useEffect(() => {
+        fetchUserData();
+        fetchGames();
+    }, []);
+
 
     const handleDelete = async (gameId) => {
         const token = localStorage.getItem('token');
@@ -69,12 +98,9 @@ const UserProfile = () => {
         }
     };
 
-    useEffect(() => {
-        fetchGames();
-    }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div>Please Log In To View Your User Profile</div>;
     }
 
     return (
