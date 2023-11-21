@@ -18,7 +18,6 @@ function App() {
   //code
 
     let [gameList, setGameList] = useState();
-
     useEffect(() => {
         const loadGames = async () => {
             const response = await axios.get(`http://localhost:3000/api/gamelist/`);
@@ -28,8 +27,6 @@ function App() {
         loadGames().catch((e) => console.log(e));
 
     }, []);
-
-    console.log(gameList);
 
     if (!gameList){
         setGameList([]);
@@ -42,6 +39,7 @@ function App() {
                     <Route path={"/"} element={<Home/>} />
                     <Route path={"/games"} element={<GameCollection gameList={gameList} setGameList={setGameList}/>} />
                     <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
+                    <Route path={"/addgame"} element={<AddGame/>}/>
                     <Route path={"/user"} element={<UserProfile/>} />
                     <Route path={"/games/random/:randomId"} element={<RandomGame gameList={gameList} setGameList={setGameList}/>} />
                     <Route path={"/login"} element={<LogInPage />} />

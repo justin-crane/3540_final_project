@@ -22,3 +22,8 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+/backend/.env
+
+/frontend/.idea
+/backend/.idea/
+/backend/node_modules/

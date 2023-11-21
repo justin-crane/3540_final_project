@@ -12,6 +12,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import fetch from 'node-fetch';
 import bcrypt from 'bcrypt';
+import axios from "axios";
 
 
 const PORT = process.env.PORT || 3001;
@@ -71,15 +72,21 @@ const upload = multer({
 })
 const singleUpload = upload.single('img');
 
+
 /*
+
     Tester API
+    
  */
 app.get('/api/hello/', async (req, res) => {
     res.send("Hello");
 })
 
+
 /*
+
     OAuth
+    
  */
 // Set up Google OAuth client
 const oauthClient = new google.auth.OAuth2(
@@ -104,6 +111,7 @@ const googleOauthURL = getGoogleOauthURL();
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
+    console.log('Authorization Header:', authHeader); //debugging
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) return res.sendStatus(401);
 
@@ -124,25 +132,42 @@ app.get('/api/google/oauthURL', (req, res) => {
 app.get('/api/google/oauth', async (req, res) => {
     try {
         const { code } = req.query;
+        console.log("Authorization code:", code); // Log the authorization code
+
         const { tokens } = await oauthClient.getToken(code);
+        console.log("Tokens received:", tokens); // Log the received tokens
 
         const accessToken = tokens.access_token;
         const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`);
         const profile = await response.json();
 
-        // Create or update user in database, create JWT token
-        const token = jwt.sign({ email: profile.email, name: profile.name }, process.env.JWT_SECRET, { expiresIn: '2d' });
+        // Check if user exists, if not, create a new one
+        let user = await db.collection('users').findOne({ email: profile.email });
+        if (!user) {
+            let result = await db.collection('users').insertOne({
+                email: profile.email,
+                username: profile.name,
+            });
+            user = { _id: result.insertedId, email: profile.email, username: profile.name };
+        }
+
+        // Generate JWT token with user ID
+        const token = jwt.sign({ id: user._id, email: profile.email }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
         // Redirect to frontend with JWT
         res.redirect(`http://localhost:3000?token=${token}`);
     } catch (error) {
         console.error('Error during Google OAuth:', error);
+        console.log("Error details:", error.message); // More detailed error logging
         res.status(500).json({ message: 'Error during Google OAuth' });
     }
 });
 
+
 /*
- messenger API
+
+   Messenger API
+   
  */
 app.get('/api/message/:sender/:recipient', async (req, res) => {
     const { sender, recipient } = req.params;
@@ -234,10 +259,12 @@ app.post('/api/message/', async (req, res) => {
     }
 })
 
-/*
-    Game Collection API
- */
 
+/*
+
+    Game Collection API
+
+ */
 app.get('/api/gamelist/', async (req, res) => {
     try {
         const games = await db.collection('gamelist').find({}).toArray();
@@ -267,9 +294,16 @@ app.put('/api/games/:id/update', async (req, res) => {
     const newGameInfo = {
         $set: {
             "name": req.body.name,
-            "console": req.body.console,
+            "gameConsole": req.body.gameConsole,
             "condition": req.body.condition,
-            "availability": req.body.availability,
+            "forTrade": req.body.forTrade,
+            "forSale": req.body.forSale,
+            "price": req.body.price,
+            "userInfo": {
+                "username": req.body.username,
+                "userID": req.body.userID,
+            },
+            "dateAdded": req.body.dateAdded,
             "notes": req.body.notes,
             "img": req.body.img
         }
@@ -283,7 +317,6 @@ app.put('/api/games/:id/update', async (req, res) => {
         res.sendStatus(404);
     }
 })
-
 
 app.delete('/api/games/:id/remove', async (req, res) => {
     const gameLookup = { _id: new ObjectId(req.params.id) };
@@ -304,10 +337,17 @@ app.post('/api/addGameImage/', async (req, res) => {
 
 app.post('/api/addgame/', async (req, res) => {
 
-    const { name, console, img, condition, availability, notes } = req.body;
+    let { name, gameConsole, img, condition, price,
+        forTrade, forSale, userInfo, username, userID, dateAdded, notes } = req.body;
+
+    userInfo = {
+        "username": username,
+        "userID": userID
+    }
 
     let game = await db.collection('gamelist').insertOne({
-        name, console, img, condition, availability, notes
+        name, gameConsole, img, condition, forTrade, forSale,
+        userInfo, price, dateAdded, notes
     });
     let gameArray = await db.collection('gamelist').find({}).toArray();
     if (gameArray){
@@ -320,13 +360,20 @@ app.post('/api/addgame/', async (req, res) => {
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
-    const {name, gameConsole, img, condition, availability, notes} = req.body;
+    let { name, gameConsole, img, condition, price,
+        forTrade, forSale, userInfo, username, dateAdded, notes } = req.body;
     const userId = req.user.id; // Extracted from the JWT token
+
+    userInfo = {
+        "username": username,
+        "userID": userId
+    }
 
     try {
         const result = await db.collection('gamelist').insertOne({
             userId, // Associates the game with a user
-            name, gameConsole, img, condition, availability, notes
+            name, gameConsole, img, condition, forTrade, forSale,
+            userInfo, price, dateAdded, notes
         });
         res.status(201).json({message: 'Game added successfully'});
     } catch (error) {
@@ -372,7 +419,6 @@ app.put('/api/modifygame/:id', authenticateToken, async (req, res) => {
         res.status(500).send('Error updating game');
     }
 });
-
 
 // User registration route
 app.post('/api/register', async (req, res) => {
@@ -442,16 +488,25 @@ app.get('/api/usergames', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/api/usergames/:userId', async (req, res) => {
-    const {userId} = req.params;
-    try {
-        const games = await db.collection('gamelist').find({userId}).toArray();
-        res.json(games);
-    } catch (error) {
-        console.error('Error fetching user games:', error);
-        res.status(500).send('Error fetching user games');
-    }
-});
+
+/*
+
+    PriceCharting API Integration
+
+ */
+const PRICE_API_KEY = process.env.PRICE_API_KEY;
+app.post('/api/price/:gameName/:consoleName', async (req, res) => {
+    const {gameName, consoleName} = req.params;
+
+    const gameRes = await axios.get(
+        `https://www.pricecharting.com/api/products?t=${PRICE_API_KEY}&q=${gameName}`)
+
+    const gameReturn = gameRes.data['products'].find((game) =>
+        game['console-name'] === consoleName
+    )
+
+    res.json(gameReturn);
+})
 
 
 run(() => {
