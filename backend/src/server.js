@@ -1,16 +1,15 @@
 import 'dotenv/config';
-import express from 'express';
 import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import cors from 'cors';
 import { db, run } from "./db.js";
-
 import express from "express";
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import AWS from 'aws-sdk';
-import {ObjectId} from 'mongodb';
-
+import { ObjectId } from 'mongodb';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import fetch from 'node-fetch';
 import bcrypt from 'bcrypt';
 
@@ -19,6 +18,31 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+    },
+});
+
+io.on("connection", (socket) => {
+    console.log(`User connected: ${socket.id}`);
+
+    socket.on("join_room", (data) => {
+        socket.join(data);
+    });
+
+    socket.on("send_message", (data) => {
+        console.log(data);
+        socket.to(data.room).emit("receive_message", data)
+    });
+});
+
+server.listen(3002, () => {
+    console.log("Server is running");
+});
 
 
 const bucket = process.env.S3_BUCKET;
@@ -54,12 +78,8 @@ app.get('/api/hello/', async (req, res) => {
     res.send("Hello");
 })
 
-
 /*
-
-
     OAuth
-
  */
 // Set up Google OAuth client
 const oauthClient = new google.auth.OAuth2(
@@ -121,10 +141,100 @@ app.get('/api/google/oauth', async (req, res) => {
     }
 });
 
+/*
+ messenger API
+ */
+app.get('/api/message/:sender/:recipient', async (req, res) => {
+    const { sender, recipient } = req.params;
+    try {
+        let query = { $in:[sender, recipient]};
+        const messages = await db.collection('messages').findOne({
+            userA: query, userB: query
+        });
+        if (messages){
+            const chatLookup = { _id: new ObjectId(messages._id) };
+            let updatedLog;
+            const options = { upsert: true };
+            if (sender === messages.userA){
+                updatedLog = {
+                    $set: {
+                        userANotif: false,
+                    }
+                }
+            } else {
+                updatedLog = {
+                    $set: {
+                        userBNotif: false,
+                    }
+                }
+            }
+
+            let messageArray = await db.collection('messages').findOneAndUpdate(chatLookup, updatedLog, options);
+            res.json(messages);
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).send('Error fetching messages');
+    }
+});
+
+app.post('/api/message/', async (req, res) => {
+    const { sender, recipient, messageBody } = req.body;
+    let query = { $in: [sender, recipient]};
+    let messageLog = {
+        _id: "",
+        userA: "",
+        userB: "",
+        chatLog: "",
+        userANotif: false,
+        userBNotif: false
+    }
+    let updatedLog;
+
+    messageLog = await db.collection('messages').findOne({
+        userA: query, userB: query
+    });
+
+    if (messageLog){
+        const chatLookup = { _id: new ObjectId(messageLog._id) };
+        const options = { upsert: true };
+        messageLog.chatLog.push({sender: sender, message: messageBody, timeStamp: new Date().getTime()})
+        console.log(messageLog)
+
+        if (sender === messageLog.userA){
+            updatedLog = {
+                $set: {
+                    chatLog: messageLog.chatLog,
+                    userANotif: false,
+                    userBNotif: true,
+                }
+            }
+        } else {
+            updatedLog = {
+                $set: {
+                    chatLog: messageLog.chatLog,
+                    userANotif: true,
+                    userBNotif: false,
+                }
+            }
+        }
+
+        let messageArray = await db.collection('messages').findOneAndUpdate(chatLookup, updatedLog, options);
+        res.json(messageArray);
+    } else {
+        const newMessage = {
+            userA: sender,
+            userB: recipient,
+            chatLog: [{sender: sender, message: messageBody, timeStamp: new Date().getTime()}]
+        }
+        let newMessageLog = await db.collection('messages').insertOne(newMessage);
+        res.json(newMessageLog);
+    }
+})
 
 /*
-
-
     Game Collection API
  */
 
@@ -190,7 +300,7 @@ app.post('/api/addGameImage/', async (req, res) => {
         }
         return res.json({'imageLocation': req.file.location});
     })
-})
+});
 
 app.post('/api/addgame/', async (req, res) => {
 
@@ -205,10 +315,12 @@ app.post('/api/addgame/', async (req, res) => {
 
     } else {
         res.sendStatus(404);
+    }
+});
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
-    const { name, gameConsole, img, condition, availability, notes } = req.body;
+    const {name, gameConsole, img, condition, availability, notes} = req.body;
     const userId = req.user.id; // Extracted from the JWT token
 
     try {
@@ -216,7 +328,7 @@ app.post('/api/addgame/', authenticateToken, async (req, res) => {
             userId, // Associates the game with a user
             name, gameConsole, img, condition, availability, notes
         });
-        res.status(201).json({ message: 'Game added successfully' });
+        res.status(201).json({message: 'Game added successfully'});
     } catch (error) {
         console.error('Error adding game:', error);
         res.status(500).send('Error adding game');
@@ -229,7 +341,7 @@ app.delete('/api/deletegame/:id', authenticateToken, async (req, res) => {
     const userId = req.user.id; // Extracted from the JWT token
 
     try {
-        const result = await db.collection('gamelist').deleteOne({ _id: new ObjectId(gameId), userId });
+        const result = await db.collection('gamelist').deleteOne({_id: new ObjectId(gameId), userId});
         if (result.deletedCount === 0) {
             return res.status(404).send('No game found with this id for the user');
         }
@@ -247,7 +359,10 @@ app.put('/api/modifygame/:id', authenticateToken, async (req, res) => {
     const updateData = req.body; // Data to update
 
     try {
-        const result = await db.collection('gamelist').updateOne({ _id: new ObjectId(gameId), userId }, { $set: updateData });
+        const result = await db.collection('gamelist').updateOne({
+            _id: new ObjectId(gameId),
+            userId
+        }, {$set: updateData});
         if (result.matchedCount === 0) {
             return res.status(404).send('No game found with this id for the user');
         }
@@ -261,13 +376,13 @@ app.put('/api/modifygame/:id', authenticateToken, async (req, res) => {
 
 // User registration route
 app.post('/api/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const {username, email, password} = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).send('Username, email, and password are required');
     }
 
-    const existingUser = await db.collection('users').findOne({ email: email });
+    const existingUser = await db.collection('users').findOne({email: email});
     if (existingUser) {
         return res.status(409).send('Email already in use');
 
@@ -282,9 +397,12 @@ app.post('/api/register', async (req, res) => {
             password: hashedPassword
         });
 
-        const token = jwt.sign({ id: result.insertedId, email: email }, process.env.JWT_SECRET, { expiresIn: '2d' });
+        const token = jwt.sign({
+            id: result.insertedId,
+            email: email
+        }, process.env.JWT_SECRET, {expiresIn: '2d'});
 
-        res.status(201).send({ id: result.insertedId, token: token });
+        res.status(201).send({id: result.insertedId, token: token});
     } catch (error) {
         console.error('Error creating user:', error);
         res.status(500).send('Error creating user');
@@ -292,17 +410,17 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     if (!email || !password) {
         return res.status(400).send('Email and password are required');
     }
 
     try {
-        const user = await db.collection('users').findOne({ email: email });
+        const user = await db.collection('users').findOne({email: email});
         if (user && await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({ id: user._id, email: email }, process.env.JWT_SECRET, { expiresIn: '2d' });
-            res.status(200).send({ token: token });
+            const token = jwt.sign({id: user._id, email: email}, process.env.JWT_SECRET, {expiresIn: '2d'});
+            res.status(200).send({token: token});
         } else {
             res.status(401).send('Invalid email or password');
         }
@@ -316,7 +434,7 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/usergames', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id; // Assuming the JWT token includes user's ID
-        const games = await db.collection('gamelist').find({ userId }).toArray();
+        const games = await db.collection('gamelist').find({userId}).toArray();
         res.json(games);
     } catch (error) {
         console.error('Error fetching user games:', error);
@@ -325,9 +443,9 @@ app.get('/api/usergames', authenticateToken, async (req, res) => {
 });
 
 app.get('/api/usergames/:userId', async (req, res) => {
-    const { userId } = req.params;
+    const {userId} = req.params;
     try {
-        const games = await db.collection('gamelist').find({ userId }).toArray();
+        const games = await db.collection('gamelist').find({userId}).toArray();
         res.json(games);
     } catch (error) {
         console.error('Error fetching user games:', error);
@@ -336,8 +454,8 @@ app.get('/api/usergames/:userId', async (req, res) => {
 });
 
 
-run(()=>{
-    app.listen(PORT, ()=>{
+run(() => {
+    app.listen(PORT, () => {
         console.log(`App is listening on port ` + PORT);
     });
 }).catch(console.dir);
