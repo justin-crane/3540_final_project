@@ -153,8 +153,8 @@ app.get('/api/google/oauth', async (req, res) => {
 
         // Generate JWT token with user ID
         const token = jwt.sign({ id: user._id, email: profile.email }, process.env.JWT_SECRET, { expiresIn: '2d' });
-
         // Redirect to frontend with JWT
+        console.log(token);
         res.redirect(`http://localhost:3000?token=${token}`);
     } catch (error) {
         console.error('Error during Google OAuth:', error);
