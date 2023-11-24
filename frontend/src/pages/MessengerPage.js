@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { io } from 'socket.io-client';
+import { jwtDecode } from 'jwt-decode';
 
 const socket = io.connect('http://localhost:3002');
 
@@ -11,7 +12,7 @@ const MessengerPage = () => {
     const [messageData, setMessageData] = useState({
         sender: "",
         recipient: "",
-        message: "",
+        messageBody: "",
     });
 
     const [room, setRoom] = useState("");
@@ -28,15 +29,14 @@ const MessengerPage = () => {
         socket.emit("send_message", { messageData, room });
     };
     const loadMessages = async (sender, recipient) => {
-        const response = await axios.get(`http://localhost:3000/api/message/${sender}/${recipient}`);
-        console.log(response);
-        const messageList = await response.data.chatLog;
-        setRoom(response.data._id);
-        setMessageEvents(messageList);
-        joinRoom();
+        if (sender !== ""){
+            const response = await axios.get(`http://localhost:3000/api/message/${sender}/${recipient}`);
+            const messageList = await response.data.chatLog;
+            setRoom(response.data._id);
+            setMessageEvents(messageList);
+            joinRoom();
+        }
     };
-
-
 
     useEffect(() => {
         loadMessages(sender, recipient).catch((e) => console.log(e));
@@ -50,19 +50,28 @@ const MessengerPage = () => {
 
     const submit = async (e) => {
         e.preventDefault();
+        if (localStorage.getItem("token")){
+            setSender(jwtDecode(localStorage.getItem("token")).email);
+        }
+        else {
+            alert("You must be logged in to send a message.");
+        }
+        setRecipient(messageData.recipient);
+        console.log(sender);
+        console.log(recipient);
         let data = {
-            sender: messageData.sender,
-            recipient: messageData.recipient,
-            messageBody: messageData.message,
+            sender: sender,
+            recipient: recipient,
+            messageBody: messageData.messageBody,
         };
 
-        const responseMessage = await axios.post(`/api/message`, data);
-        console.log(`${messageData.sender}'s message sent successfully.`);
-        console.log(responseMessage);
-        e.target.reset();
-        setSender(data.sender);
-        setRecipient(data.recipient);
-        sendMessage();
+        setMessageData(data);
+        if (sender !== ""){
+            const responseMessage = await axios.post(`/api/message`, data);
+            console.log(`${sender}'s message sent successfully.`);
+            e.target.reset();
+            sendMessage();
+        }
     }
 
     useEffect(() => {
@@ -71,24 +80,31 @@ const MessengerPage = () => {
             console.log(data);
             setMessageEvents(messageEvents);
         });
-    }, [submit]);
+    }, [submit, socket]);
 
     return (
         <div className="App container-lg">
+            <div id="messages">
+                <ul>
+                    {
+                        messageEvents.map((message, i) => (
+                            <li key={i}>
+                                <h3>{message.sender}</h3>
+                                <p>{message.message}</p>
+                                <p>sent@{new Date(message.timeStamp).toString()}</p>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+        <footer>
             <div className="w-75 mx-auto">
                 <h1>Send a message</h1>
                 <Form onSubmit={submit} >
-                    <Form.Group id="formSender" controlId="formSender">
-                        <Form.Label>Sender:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="user Name"
-                            name="sender"
-                            onChange={updateMessageForm}/>
-                    </Form.Group>
                     <Form.Group id="formRecipient" controlId="formRecipient">
                         <Form.Label>Recipient:</Form.Label>
                         <Form.Control
+                            required
                             type="text"
                             placeholder="user Name"
                             name="recipient"
@@ -97,29 +113,16 @@ const MessengerPage = () => {
                     <Form.Group id="formMessage" controlId="formMessage">
                         <Form.Label></Form.Label>
                         <Form.Control
+                            required
                             type="text"
                             placeholder="Message"
-                            name="message"
+                            name="messageBody"
                             onChange={updateMessageForm}/>
                     </Form.Group>
                     <Button type="submit" variant="outline-success m-3 w-25" >Send</Button>
                 </Form>
             </div>
-
-            <div id="messages">
-                <ul>
-                    {
-                        messageEvents.map((message, i) => (
-                        <li key={i}>
-                            <h3>{message.sender}</h3>
-                            <p>{message.message}</p>
-                            <p>sent@{new Date(message.timeStamp).toString()}</p>
-                        </li>
-                        ))
-                    }
-                </ul>
-            </div>
-
+        </footer>
         </div>
     );
 }

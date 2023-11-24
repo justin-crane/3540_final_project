@@ -9,10 +9,10 @@ export  function AddGame(){
     const [file, setFile] = useState();
     const consoleList = ['Atari', 'Commodore 64', 'Famicom', 'Gameboy', 'Gameboy Color',
         'Gameboy Advance', 'Gamecube', 'NES', 'Neo Geo', 'N-Gage', 'Nintendo 64',
-        'Nintendo 3DS', 'Nintendo DS', 'Nintendo Switch', 'PC', 'PSP', 'Playstation',
-        'Playstation 2', 'Playstation 3', 'Playstation 4', 'Playstation 5', 'Sega Dreamcast',
-        'Sega Game Gear', 'Sega Genesis', 'Sega Master System', 'Sega Saturn', 'Super Famicom',
-        'Super Nintendo', 'Virtual Boy', 'Xbox', 'Xbox 360', 'Xbox One', 'Xbox Series X']
+        'Nintendo 3DS', 'Nintendo DS', 'Nintendo Switch', 'PC', 'PSP', 'Playstation Vita',
+        'Playstation', 'Playstation 2', 'Playstation 3', 'Playstation 4', 'Playstation 5',
+        'Sega Dreamcast', 'Sega Game Gear', 'Sega Genesis', 'Sega Master System', 'Sega Saturn',
+        'Super Famicom', 'Super Nintendo', 'Virtual Boy', 'Xbox', 'Xbox 360', 'Xbox One', 'Xbox Series X']
     const [gameFormData, setGameFormData] = useState({
         formName: "",
         formConsole: "",

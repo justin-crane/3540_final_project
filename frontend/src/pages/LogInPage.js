@@ -37,7 +37,6 @@ export const LogInPage = () => {
                 console.error("Error fetching Google OAuth URL:", e);
                 setErrorMessage("Failed to fetch Google OAuth URL");
             });
-
         window.addEventListener('storage', checkLoginStatus);
         return () => window.removeEventListener('storage', checkLoginStatus);
     }, [navigate]);
