@@ -39,7 +39,7 @@ function App() {
                     <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
                     <Route path={"/addgame"} element={<AddGame/>}/>
                     <Route path={"/user"} element={<UserProfile/>} />
-                    <Route path={"/games/random/:randomId"} element={<RandomGame gameList={gameList} setGameList={setGameList}/>} />
+                    {/*<Route path={"/games/" + randomNum} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />*/}
                     <Route path={"/login"} element={<LogInPage />} />
                     <Route path={"/signup"} element={<SignUpPage />} />
                     <Route path={"/addgame"} element={<AddGame gameList={gameList} setGameList={setGameList}/>} />
