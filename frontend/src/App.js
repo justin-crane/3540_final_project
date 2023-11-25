@@ -1,5 +1,4 @@
 import './App.css';
-import Home from "./pages/Home";
 import GameProfile from "./pages/GameProfile";
 import GameCollection from "./pages/GameCollection";
 import UserProfile from "./pages/UserProfile";
@@ -36,8 +35,7 @@ function App() {
         <>
             <BrowserRouter>
                 <Routes>
-                    <Route path={"/"} element={<Home/>} />
-                    <Route path={"/games"} element={<GameCollection gameList={gameList} setGameList={setGameList}/>} />
+                    <Route path={"/"} element={<GameCollection gameList={gameList} setGameList={setGameList}/>} />
                     <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
                     <Route path={"/addgame"} element={<AddGame/>}/>
                     <Route path={"/user"} element={<UserProfile/>} />

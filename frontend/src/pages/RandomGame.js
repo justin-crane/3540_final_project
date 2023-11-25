@@ -1,6 +1,14 @@
 const RandomGame = () => {
+
+    /*
+
+        TODO : Return random game from DB.
+
+     */
+
+
     return (
-        <h1>Random Game</h1>
+        <h1>R</h1>
     );
 }
 
