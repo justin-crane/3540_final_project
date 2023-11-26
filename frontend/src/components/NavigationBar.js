@@ -16,7 +16,7 @@ function NavigationBar(){
                     <Nav.Link href={"/"}>Home</Nav.Link>
                     <Nav.Link href={"/addgame"}>Add Game</Nav.Link>
                     <Nav.Link href={"/user"}>Profile</Nav.Link>
-                    <Nav.Link href={"games/random"}>Random</Nav.Link>
+                    <Nav.Link href={"/games/random"}>Random</Nav.Link>
                     <Nav.Link href={"/login"}>Login</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
