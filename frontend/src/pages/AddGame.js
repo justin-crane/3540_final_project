@@ -3,6 +3,7 @@ import {InputGroup, Stack, Form, Button} from 'react-bootstrap';
 import {getGame} from "../components/PriceChartAPIProcess";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 export  function AddGame(){
     const [gameList, setGameList] = useState();
@@ -26,13 +27,19 @@ export  function AddGame(){
         dateAdded: "",
         formNotes:""
     })
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check if the user is authenticated
         const token = localStorage.getItem('token');
-        if (!token) {
-            // If no token is found, redirect to the login page
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setGameFormData(prevFormData => ({
+                ...prevFormData,
+                username: decodedToken.username,
+                userID: decodedToken.id,
+            }));
+        } else {
             navigate('/login');
         }
     }, [navigate]);
@@ -49,21 +56,21 @@ export  function AddGame(){
     }
     const submit = async (e) => {
         e.preventDefault();
-        const formData = new FormData();
-        let imgLoc;
-        formData.append("img", file)
+        setLoading(true);
 
-        if (!gameFormData.img){
-            imgLoc = "/images/placeholder_image.png";
-        } else {
-            const response = await axios.post('/api/addGameImage', formData,{
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-                .then(res => {
-                    imgLoc = res.data.imageLocation;
-                })
+        const formData = new FormData();
+        let imgLoc = gameFormData.img || "/images/placeholder_image.png";
+        if (file) {
+            formData.append("img", file);
+            try {
+                const imageResponse = await axios.post('/api/addGameImage', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                imgLoc = imageResponse.data.imageLocation;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                // Handle image upload error
+            }
         }
 
         let data = {
@@ -75,22 +82,36 @@ export  function AddGame(){
             price: gameFormData.formPrice,
             notes: gameFormData.formNotes,
             dateAdded: new Date(),
-            username: "TODO",
-            userID: "TODO",
             img: imgLoc,
+            userInfo: {
+                username: gameFormData.username,
+                userID: gameFormData.userID,
+            },
         };
 
-        const getGameFromAPI = async () => {
-            await getGame(data, gameFormData)
-                .then(res => console.log(data = res)).catch(e => console.log(e))
-            await console.log("ADD GAME RETURN DATA: ", data);
-            const responseGames = await axios.post(`/api/addgame`, data);
-            await alert(`${data.name} submitted successfully.`)
-            await e.target.reset();
-        };
-        getGameFromAPI().catch((e) => console.log(e));
+        // Fetch game data from the external API and update local data
+        try {
+            const updatedData = await getGame(data, gameFormData);
+            console.log("Updated Data: ", updatedData);
+            data = { ...data, ...updatedData }; // Merge updated data with local data
 
-    }
+            const token = localStorage.getItem('token');
+            const responseGames = await axios.post('http://localhost:3001/api/addgame', data, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("ADD GAME RETURN DATA: ", responseGames.data);
+            alert(`${data.name} submitted successfully.`);
+            setGameList([...gameList, responseGames.data]); // Update the game list
+        } catch (error) {
+            console.error('Error in getGameFromAPI or adding game:', error);
+            // Handle errors from getGameFromAPI or game submission
+        }
+
+        setLoading(false);
+        e.target.reset();
+    };
+
+
     if (!localStorage.getItem('token')) {
         // If the user is not authenticated, display a message
         return <div>Please log in to add a game</div>;

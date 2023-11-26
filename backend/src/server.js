@@ -152,7 +152,7 @@ app.get('/api/google/oauth', async (req, res) => {
         }
 
         // Generate JWT token with user ID
-        const token = jwt.sign({ id: user._id, email: profile.email }, process.env.JWT_SECRET, { expiresIn: '2d' });
+        const token = jwt.sign({ id: user._id, email: profile.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '2d' });
         // Redirect to frontend with JWT
         console.log(token);
         res.redirect(`http://localhost:3000?token=${token}`);
@@ -334,7 +334,7 @@ app.post('/api/addGameImage/', async (req, res) => {
         return res.json({'imageLocation': req.file.location});
     })
 });
-
+/* We have two addgames so i commented one out
 app.post('/api/addgame/', async (req, res) => {
 
     let { name, gameConsole, img, condition, price,
@@ -357,23 +357,19 @@ app.post('/api/addgame/', async (req, res) => {
         res.sendStatus(404);
     }
 });
+*/
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
-    let { name, gameConsole, img, condition, price,
-        forTrade, forSale, userInfo, username, dateAdded, notes } = req.body;
+    const { name, gameConsole, img, condition, price, forTrade, forSale, dateAdded, notes } = req.body;
     const userId = req.user.id; // Extracted from the JWT token
-
-    userInfo = {
-        "username": username,
-        "userID": userId
-    }
+    const username = req.user.username; // Assuming username is included in the JWT token
 
     try {
         const result = await db.collection('gamelist').insertOne({
-            userId, // Associates the game with a user
             name, gameConsole, img, condition, forTrade, forSale,
-            userInfo, price, dateAdded, notes
+            userInfo: { username, userID: userId },
+            price, dateAdded, notes
         });
         res.status(201).json({message: 'Game added successfully'});
     } catch (error) {
@@ -388,7 +384,7 @@ app.delete('/api/deletegame/:id', authenticateToken, async (req, res) => {
     const userId = req.user.id; // Extracted from the JWT token
 
     try {
-        const result = await db.collection('gamelist').deleteOne({_id: new ObjectId(gameId), userId});
+        const result = await db.collection('gamelist').deleteOne({_id: new ObjectId(gameId), 'userInfo.userID': userId});
         if (result.deletedCount === 0) {
             return res.status(404).send('No game found with this id for the user');
         }
@@ -477,10 +473,10 @@ app.post('/api/login', async (req, res) => {
 });
 
 // Fetch games for the authenticated user
-app.get('/api/usergames', authenticateToken, async (req, res) => {
+app.get('/api/user', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming the JWT token includes user's ID
-        const games = await db.collection('gamelist').find({userId}).toArray();
+        const userId = req.user.id;
+        const games = await db.collection('gamelist').find({ 'userInfo.userID': userId }).toArray();
         res.json(games);
     } catch (error) {
         console.error('Error fetching user games:', error);
