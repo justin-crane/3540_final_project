@@ -11,7 +11,10 @@ import {Card, Col, OverlayTrigger, Row, Stack, Tooltip} from "react-bootstrap";
 
 const GameProfile = (args) => {
     const {gameList} = args;
-    const {gameId} = useParams() || args;
+    let {gameId} = useParams();
+    if (!gameId){
+        gameId = args.gameId;
+    }
 
     const game = gameList.find(
         game => game._id === gameId)
