@@ -1,5 +1,4 @@
 import './App.css';
-import Home from "./pages/Home";
 import GameProfile from "./pages/GameProfile";
 import GameCollection from "./pages/GameCollection";
 import UserProfile from "./pages/UserProfile";
@@ -18,38 +17,48 @@ function App() {
   //code
 
     let [gameList, setGameList] = useState();
+    const [randomGame, setRandomGame] = useState();
+    const [isLoading, setLoading] = useState(true);
+
     useEffect(() => {
         const loadGames = async () => {
             const response = await axios.get(`http://localhost:3000/api/gamelist/`);
             const newGameList = await response.data;
             setGameList(newGameList);
+            const randomRes = await axios.get(`http://localhost:3000/api/randomgame/`);
+            setRandomGame(await randomRes.data);
+            setLoading(false);
         };
         loadGames().catch((e) => console.log(e));
-
     }, []);
 
     if (!gameList){
         setGameList([]);
     }
-
-  return (
-        <>
-            <BrowserRouter>
-                <Routes>
-                    <Route path={"/"} element={<Home/>} />
-                    <Route path={"/games"} element={<GameCollection gameList={gameList} setGameList={setGameList}/>} />
-                    <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
-                    <Route path={"/addgame"} element={<AddGame/>}/>
-                    <Route path={"/user"} element={<UserProfile/>} />
-                    <Route path={"/games/random/:randomId"} element={<RandomGame gameList={gameList} setGameList={setGameList}/>} />
-                    <Route path={"/login"} element={<LogInPage />} />
-                    <Route path={"/signup"} element={<SignUpPage />} />
-                    <Route path={"/addgame"} element={<AddGame gameList={gameList} setGameList={setGameList}/>} />
-                    <Route path={"/messenger"} element={<MessengerPage />} />
-                </Routes>
-            </BrowserRouter>
-        </>
-  );
+    if(!randomGame){
+        setRandomGame([]);
+    }
+    if(isLoading){
+        return <h1>Loading...</h1>
+    } else {
+        return (
+            <>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path={"/"} element={<GameCollection gameList={gameList} setGameList={setGameList}/>} />
+                        <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
+                        <Route path={"/addgame"} element={<AddGame/>}/>
+                        <Route path={"/user"} element={<UserProfile/>} />
+                        <Route path={`/games/random`} element={<RandomGame gameList={gameList} randomGameId={randomGame[0]._id} />} />
+                        <Route path={"/login"} element={<LogInPage />} />
+                        <Route path={"/signup"} element={<SignUpPage />} />
+                        <Route path={"/addgame"} element={<AddGame gameList={gameList} setGameList={setGameList}/>} />
+                        <Route path={"/messenger"} element={<MessengerPage />} />
+                    </Routes>
+                </BrowserRouter>
+            </>
+        );
+    }
 }
 
 export default App;

@@ -16,6 +16,8 @@ import axios from "axios";
 
 
 const PORT = process.env.PORT || 3001;
+const messageServerPort = 3002;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -41,7 +43,7 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(3002, () => {
+server.listen(messageServerPort, () => {
     console.log("Server is running");
 });
 
@@ -288,6 +290,20 @@ app.get('/api/games/:id', async (req, res) => {
         res.sendStatus(404);
     }
 })
+
+app.get('/api/randomgame/', async (req, res) => {
+    try {
+        const randomGame = await db.collection('gamelist').aggregate([{$sample: {size: 1}}]).toArray();
+        if (randomGame){
+            res.json(randomGame);
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        console.error('Error fetching random game:', error);
+        res.status(500).send('Error fetching random game');
+    }
+});
 
 app.put('/api/games/:id/update', async (req, res) => {
     const gameLookup = { _id: new ObjectId(req.params.id) };

@@ -1,6 +1,13 @@
-const RandomGame = () => {
+import GameProfile from "./GameProfile";
+
+const RandomGame = (args) => {
+
+    const {randomGameId, gameList} = args;
+
     return (
-        <h1>Random Game</h1>
+        <>
+            <GameProfile gameList={gameList} gameId={randomGameId}/>
+        </>
     );
 }
 
