@@ -2,6 +2,7 @@ import GameCard from "../components/GameCard";
 import {Row} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import Container from "react-bootstrap/Container";
 
 const GameCollection = (args) => {
 
@@ -21,13 +22,15 @@ const GameCollection = (args) => {
     return (
         <>
             <h1 className={"text-center pt-3 text-decoration-underline"}>Recent Additions</h1>
-            <Row xs={1}
-                 md={2} lg={4}
-                 className={"align-items-center justify-content-center text-center"}>
-                        {gameList.map(game => (
-                            <GameCard gameId={game._id} gameList={gameList}/>
-                        ))}
-            </Row>
+            <Container className={"text-center"}>
+                <Row xs={1}
+                     md={2} lg={4}
+                     className={""}>
+                            {gameList.map(game => (
+                                <GameCard key={game._id} gameId={game._id} gameList={gameList}/>
+                            ))}
+                </Row>
+            </Container>
         </>
     );
 }
