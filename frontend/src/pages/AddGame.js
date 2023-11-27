@@ -216,7 +216,10 @@ export  function AddGame(){
                             onChange={handleFile}
                         />
                     </Form.Group>
-                    <Button type="submit" variant="outline-success m-3 w-25" >Submit</Button>
+                    <Button type="submit" variant="outline-success m-3 w-25"
+                            disabled={ !gameFormData.formName || !gameFormData.formConsole || !gameFormData.img ||
+                                !gameFormData.formCondition || !gameFormData.forTrade || !gameFormData.forSale }
+                    >Submit</Button>
                 </Form>
             </div>
         </div>

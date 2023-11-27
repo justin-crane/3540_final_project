@@ -10,6 +10,7 @@ import {AddGame} from "./pages/AddGame";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import MessengerPage from "./pages/MessengerPage";
+import Image from "react-bootstrap/Image";
 
 
 
@@ -39,7 +40,8 @@ function App() {
         setRandomGame([]);
     }
     if(isLoading){
-        return <h1>Loading...</h1>
+        return <Image src={"../../VGTC_Logo_small.PNG"} fluid rounded
+                      className={"w-25"} style={{position: "absolute",top: "35%", left: "35%"}}/>
     } else {
         return (
             <>

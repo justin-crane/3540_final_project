@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Button, Form} from "react-bootstrap";
+import Container from "react-bootstrap/Container";
 
 export const SignUpPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
@@ -43,34 +45,75 @@ export const SignUpPage = () => {
     };
 
     return (
-        <div className="content-container">
+        <Container className="App container-lg w-75 mx-auto mt-4">
             <h1>Sign Up</h1>
             {errorMessage && <div className="fail">{errorMessage}</div>}
-            <input
-                value={usernameValue}
-                onChange={e => setUsernameValue(e.target.value)}
-                placeholder="Username"/>
-            <input
-                value={emailValue}
-                onChange={e => setEmailValue(e.target.value)}
-                placeholder="Enter Your Email"/>
-            <input
-                type="password"
-                value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
-                placeholder="Password"/>
-            <input
-                type="password"
-                value={confirmPasswordValue}
-                onChange={e => setConfirmPasswordValue(e.target.value)}
-                placeholder="Confirm Password"/>
-            <button
-                disabled={
-                    !usernameValue || !emailValue || !passwordValue ||
-                    passwordValue !== confirmPasswordValue
-                }
-                onClick={onSignUpClicked}>Sign Up</button>
-            <button onClick={() => navigate('/login')}>Already have an account? Log In!</button>
-        </div>
+            <Form>
+                <Form.Group id="formEmail" controlId="formEmail">
+                    <Form.Label></Form.Label>
+                    <Form.Control
+                        value={usernameValue}
+                        type="text"
+                        placeholder="Username"
+                        name="username"
+                        onChange={e => setUsernameValue(e.target.value)}/>
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label></Form.Label>
+                    <Form.Control
+                        value={emailValue}
+                        type="email"
+                        placeholder="E-Mail"
+                        name="email"
+                        onChange={e => setEmailValue(e.target.value)}/>
+                    <Form.Text className="text-muted pl-2" style={{textAlign:"left"}}>
+                        We'll never share your email with anyone else.
+                    </Form.Text>
+                </Form.Group>
+                <Form.Group id="formPassword" controlId="formPassword">
+                    <Form.Label></Form.Label>
+                    <Form.Control
+                        value={passwordValue}
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        onChange={e => setPasswordValue(e.target.value)}/>
+                </Form.Group>
+                <Form.Group id="formConfirmPassword" controlId="formConfirmPassword">
+                    <Form.Label></Form.Label>
+                    <Form.Control
+                        value={confirmPasswordValue}
+                        type="password"
+                        placeholder="Confirm Password"
+                        name="confirmPassword"
+                        onChange={e => setConfirmPasswordValue(e.target.value)}/>
+                </Form.Group>
+                <Form.Group>
+                </Form.Group>
+                <Form.Group>
+                    <Button
+                        className={"mt-3"}
+                        variant={"outline-primary"}
+                        size={"lg"}
+                        style={{fontSize: "1.2rem"}}
+                        disabled={
+                            !usernameValue || !emailValue || !passwordValue ||
+                            passwordValue !== confirmPasswordValue
+                        }
+
+                        onClick={onSignUpClicked}>Sign Up
+                    </Button>
+                </Form.Group>
+                <Form.Group>
+                    <Button
+                        className={"mt-3"}
+                        variant={"outline-primary"}
+                        size={"md"}
+                        style={{fontSize: ".9rem"}}
+                        onClick={() => navigate('/login')}>Already have an account?<br/>Log In!
+                    </Button>
+                </Form.Group>
+            </Form>
+        </Container>
     );
 };
