@@ -77,9 +77,9 @@ const GameCard = (args) => {
                         }
                     </Stack>
                     <Card.Body style={{overflow:"scroll"}}>
-                        <Card.Text>{game.name}</Card.Text>
+                        <Card.Text className={"text-center"}>{game.name}</Card.Text>
                     </Card.Body>
-                    <Card.Footer>
+                    <Card.Footer className={"text-center"}>
                         <small className={"text-muted"}>
                             Posted by: @{game.userInfo.username}
                         </small>
