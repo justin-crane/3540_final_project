@@ -5,16 +5,6 @@ import {useDebouncedCallback} from "use-debounce";
 import {Desktop, Tablet, Mobile, Minimum} from "./MediaSettings"
 function SearchBar(){
 
-    /*
-    *
-    *   TODO: WIP Still.
-    *    - Clear game array when search box is empty
-    *    - Add link to each game that returns
-    *    - Limit array to X amount of results returned (possibly on back-end call to mongo)
-    *    - Maybe put media query const variables into their own component w/export for reusability.
-    *
-    * */
-
     const [searchText, setSearchText] = useState("");
     const [gamesReturn, setGamesReturn] = useState([{name:null, _id:""}]);
 
@@ -22,14 +12,11 @@ function SearchBar(){
         () => {
             searchGameAPI().then(r => {}).catch(e=>{});
         },
-        // delay in ms
         500
     );
 
     const handleSearch = (e) => {
         setSearchText(e.target.value);
-        console.log("SEARCH VALUE: ", e.target.value);
-        //searchGameAPI();
         debounced();
     }
     const searchGameAPI = async () => {
@@ -38,11 +25,9 @@ function SearchBar(){
         } else {
             const response = await axios.get(`http://localhost:3000/api/search/${searchText}`);
             setGamesReturn(await response.data);
-            console.log("GAME RETURN: ", await response.data)
         }
     }
     const GameListing = (game) => {
-        console.log("GAME: ", game)
         return <a href={`/games/${game.game._id}`}
                      style={{textDecoration: "none"}}>
             <Image src={game.game.img}
