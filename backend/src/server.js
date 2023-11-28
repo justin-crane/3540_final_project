@@ -305,6 +305,21 @@ app.get('/api/randomgame/', async (req, res) => {
     }
 });
 
+app.get('/api/search/:searcheditem', async (req, res) => {
+    const { searcheditem } = req.params;
+    try {
+        const searchedGames = await db.collection('gamelist').find({$text: {$search: searcheditem}}).toArray();
+        if (searchedGames){
+            res.json(searchedGames);
+        } else {
+            res.sendStatus(500);
+        }
+    } catch (error) {
+        console.error('Error searching for game:', error);
+        res.status(500).send('Error searching for game');
+    }
+});
+
 app.put('/api/games/:id/update', async (req, res) => {
     const gameLookup = { _id: new ObjectId(req.params.id) };
     const newGameInfo = {
