@@ -19,8 +19,8 @@ export  function AddGame(){
         formConsole: "",
         img: null,
         formCondition: "",
-        forTrade: false,
-        forSale: false,
+        forTrade: 0,
+        forSale: 0,
         formPrice: 0,
         username: "",
         userID: "",
@@ -43,9 +43,15 @@ export  function AddGame(){
             navigate('/login');
         }
     }, [navigate]);
-    function updateGameForm(e){
+    function updateGameForm(e) {
         const key = e.target.name;
         let value = e.target.value;
+
+        // Convert forTrade and forSale to boolean values if they are the fields being updated
+        if (key === 'forTrade' || key === 'forSale') {
+            value = value === 'true'; // This converts the string "true" to boolean true
+        }
+
         console.log("ADD GAME KEY VALUE: " + key + ", " + value);
         setGameFormData({...gameFormData, [key]: value});
     }
@@ -88,6 +94,7 @@ export  function AddGame(){
                 userID: gameFormData.userID,
             },
         };
+        console.log("Final data being sent to server:", data); //trying to debug
 
         // Fetch game data from the external API and update local data
         try {
@@ -132,12 +139,12 @@ export  function AddGame(){
                     <Form.Group id="formConsole" controlId="formConsole">
                         <Form.Label></Form.Label>
                         <Form.Select
-                                required
-                                aria-label={"Console Selection"}
-                                type="text"
-                                name="formConsole"
-                                defaultValue={0}
-                                onChange={updateGameForm}>
+                            required
+                            aria-label={"Console Selection"}
+                            type="text"
+                            name="formConsole"
+                            defaultValue={0}
+                            onChange={updateGameForm}>
                             <option value={0} disabled={true}>Select Console: </option>
                             {consoleList.map((item) => (<option key={item} value={item}>{item}</option>))}
                         </Form.Select>
@@ -145,10 +152,10 @@ export  function AddGame(){
                     <Form.Group id="formCondition" controlId="formCondition">
                         <Form.Label></Form.Label>
                         <Form.Select aria-label={"Condition Selection"}
-                            type="text"
-                            name="formCondition"
-                            defaultValue={0}
-                            onChange={updateGameForm}>
+                                     type="text"
+                                     name="formCondition"
+                                     defaultValue={0}
+                                     onChange={updateGameForm}>
                             <option value={0} disabled={true}>Selection Condition: </option>
                             <option value={1}>1 - Loose/No Original Box/Poor Condition</option>
                             <option value={2}>2 - Box Only/Manual Only/Flawed</option>
@@ -165,8 +172,8 @@ export  function AddGame(){
                                      defaultValue={0}
                                      onChange={updateGameForm}>
                             <option value={0} disabled={true}>For Trade?</option>
-                            <option value={false}>Not For Trade</option>
-                            <option value={true}>For Trade</option>
+                            <option value={"false"}>Not For Trade</option>
+                            <option value={"true"}>For Trade</option>
                         </Form.Select>
                     </Form.Group>
                     <Form.Group id="forSale" controlId="forSale" className={"mb-4"}>
@@ -177,8 +184,8 @@ export  function AddGame(){
                                      defaultValue={0}
                                      onChange={updateGameForm}>
                             <option value={0} disabled={true}>For Sale?</option>
-                            <option value={false}>Not For Sale</option>
-                            <option value={true}>For Sale</option>
+                            <option value={"false"}>Not For Sale</option>
+                            <option value={"true"}>For Sale</option>
                         </Form.Select>
                     </Form.Group>
                     <Form.Group id={"formPrice"} controlId={"formPrice"}>
@@ -218,7 +225,7 @@ export  function AddGame(){
                     </Form.Group>
                     <Button type="submit" variant="outline-success m-3 w-25"
                             disabled={ !gameFormData.formName || !gameFormData.formConsole || !gameFormData.img ||
-                                !gameFormData.formCondition || !gameFormData.forTrade || !gameFormData.forSale }
+                                !gameFormData.formCondition || gameFormData.forTrade === 0 || gameFormData.forSale === 0 }
                     >Submit</Button>
                 </Form>
             </div>

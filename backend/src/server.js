@@ -393,14 +393,25 @@ app.post('/api/addgame/', async (req, res) => {
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
     const { name, gameConsole, img, condition, price, forTrade, forSale, dateAdded, notes } = req.body;
-    const userId = req.user.id; // Extracted from the JWT token
-    const username = req.user.username; // Assuming username is included in the JWT token
+    const userId = req.user.id;
+    const username = req.user.username;
+
+    // Convert forTrade and forSale from string to boolean
+    const forTradeBool = typeof forTrade === 'string' ? forTrade === 'true' : forTrade;
+    const forSaleBool = typeof forSale === 'string' ? forSale === 'true' : forSale;
 
     try {
         const result = await db.collection('gamelist').insertOne({
-            name, gameConsole, img, condition, forTrade, forSale,
+            name,
+            gameConsole,
+            img,
+            condition,
+            forTrade: forTradeBool,
+            forSale: forSaleBool,
             userInfo: { username, userID: userId },
-            price, dateAdded, notes
+            price,
+            dateAdded,
+            notes
         });
         res.status(201).json({message: 'Game added successfully'});
     } catch (error) {
@@ -408,7 +419,6 @@ app.post('/api/addgame/', authenticateToken, async (req, res) => {
         res.status(500).send('Error adding game');
     }
 });
-
 // User can delete game from their profile
 app.delete('/api/deletegame/:id', authenticateToken, async (req, res) => {
     const gameId = req.params.id;
