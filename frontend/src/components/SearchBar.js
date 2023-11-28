@@ -3,7 +3,7 @@ import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
 import {MediaQuery, useMediaQuery} from 'react-responsive';
-
+import {Desktop, Tablet, Mobile, Minimum} from "./MediaSettings"
 function SearchBar(){
 
     /*
@@ -12,25 +12,9 @@ function SearchBar(){
     *    - Clear game array when search box is empty
     *    - Add link to each game that returns
     *    - Limit array to X amount of results returned (possibly on back-end call to mongo)
+    *    - Maybe put media query const variables into their own component w/export for reusability.
     *
     * */
-
-    const Desktop = ({children}) => {
-        const isDesktop = useMediaQuery({minWidth:992})
-        return isDesktop ? children : null;
-    }
-    const Tablet = ({children}) => {
-        const isTablet = useMediaQuery({minWidth:768, maxWidth:991})
-        return isTablet ? children : null;
-    }
-    const Mobile = ({children}) => {
-        const isMobile = useMediaQuery({maxWidth:767, minWidth: 638})
-        return isMobile ? children : null;
-    }
-    const Minimum = ({children}) => {
-        const isMin = useMediaQuery({maxWidth:637})
-        return isMin ? children : null;
-    }
 
     const [searchText, setSearchText] = useState("");
     const [gamesReturn, setGamesReturn] = useState([{name:null, _id:""}]);

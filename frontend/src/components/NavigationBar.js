@@ -1,28 +1,11 @@
-import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import LogoImage from "./LogoImage";
 import SearchBar from "./SearchBar";
 import {useMediaQuery} from "react-responsive";
+import {Desktop, Tablet, Mobile, Minimum} from "./MediaSettings"
 
 function NavigationBar(){
-
-    const Desktop = ({children}) => {
-        const isDesktop = useMediaQuery({minWidth:992})
-        return isDesktop ? children : null;
-    }
-    const Tablet = ({children}) => {
-        const isTablet = useMediaQuery({minWidth:768, maxWidth:991})
-        return isTablet ? children : null;
-    }
-    const Mobile = ({children}) => {
-        const isMobile = useMediaQuery({maxWidth:767, minWidth: 638})
-        return isMobile ? children : null;
-    }
-    const Minimum = ({children}) => {
-        const isMin = useMediaQuery({maxWidth:637})
-        return isMin ? children : null;
-    }
 
     return (
         <Navbar expand={"lg"} className={"bg-body-tertiary"}
