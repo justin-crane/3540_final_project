@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  api:
+    build: ./backend
+    container_name: vgtc_backend
+    ports:
+      - '3001:3001'
+      - '3002:3002'
+    volumes:
+      - ./backend:/app
+  client:
+    build: ./frontend
+    container_name: vgtc_frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app
+    stdin_open: true
+    tty: true
