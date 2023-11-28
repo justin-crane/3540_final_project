@@ -43,7 +43,13 @@ const UserProfile = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            setGames(response.data); // Set games data
+            console.log("Raw Games Data: ", response.data);
+            const processedGames = response.data.map(game => ({
+                ...game,
+                forTrade: game.forTrade === 'true' || game.forTrade === true, // Convert string "true" or boolean true to boolean
+                forSale: game.forSale === 'true' || game.forSale === true // Convert string "true" or boolean true to boolean
+            }));
+            setGames(processedGames); // Update the state with the processed games
         } catch (error) {
             console.error('Error fetching user games', error);
         }
