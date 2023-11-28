@@ -11,7 +11,7 @@ import { ObjectId } from 'mongodb';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import fetch from 'node-fetch';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import axios from "axios";
 
 
@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send_message", (data) => {
-        console.log(data);
+        //console.log(data);
         socket.to(data.room).emit("receive_message", data)
     });
 });
@@ -228,7 +228,7 @@ app.post('/api/message/', async (req, res) => {
         const chatLookup = { _id: new ObjectId(messageLog._id) };
         const options = { upsert: true };
         messageLog.chatLog.push({sender: sender, message: messageBody, timeStamp: new Date().getTime()})
-        console.log(messageLog)
+        //console.log(messageLog)
 
         if (sender === messageLog.userA){
             updatedLog = {
