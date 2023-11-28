@@ -1,8 +1,7 @@
-import {Form, Image, ListGroup, Tooltip} from "react-bootstrap";
+import {Form, Image, ListGroup} from "react-bootstrap";
 import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
-import {MediaQuery, useMediaQuery} from 'react-responsive';
 import {Desktop, Tablet, Mobile, Minimum} from "./MediaSettings"
 function SearchBar(){
 
@@ -42,6 +41,21 @@ function SearchBar(){
             console.log("GAME RETURN: ", await response.data)
         }
     }
+    const GameListing = (game) => {
+        console.log("GAME: ", game)
+        return <a href={`/games/${game.game._id}`}
+                     style={{textDecoration: "none"}}>
+            <Image src={game.game.img}
+                   style={{width: "20px", marginRight: "5px"}}/>
+            <nobr style={{borderRight: "1px solid black",
+                paddingRight: "10px"}}>
+                {game.game.name}
+            </nobr>
+            <nobr className="text-muted small ps-2">
+                {game.game.gameConsole}
+            </nobr>
+        </a>
+    }
 
     if(!gamesReturn){
         setGamesReturn([{}, {}]);
@@ -67,12 +81,7 @@ function SearchBar(){
                         : gamesReturn.map(game => (
                             <ListGroup key={game.name}>
                                 <ListGroup.Item>
-                                    <Image src={game.img}
-                                           style={{width: "20px"}}/>
-                                    {game.name} {"  "}|{"  "}
-                                    <nobr className="text-muted small">
-                                            {game.gameConsole}
-                                    </nobr>
+                                    <GameListing game={game}/>
                                 </ListGroup.Item>
                             </ListGroup>
                         ))
@@ -88,11 +97,7 @@ function SearchBar(){
                         : gamesReturn.map(game => (
                             <ListGroup key={game.name}>
                                 <ListGroup.Item>
-                                    <Image src={game.img} style={{width: "20px"}}/>
-                                    {game.name} {"  "}|{"  "}
-                                    <nobr className="text-muted small">
-                                        {game.gameConsole}
-                                    </nobr>
+                                    <GameListing game={game}/>
                                 </ListGroup.Item>
                             </ListGroup>
                         ))
@@ -109,11 +114,7 @@ function SearchBar(){
                         : gamesReturn.map(game => (
                             <ListGroup key={game.name}>
                                 <ListGroup.Item>
-                                    <Image src={game.img} style={{width: "20px"}}/>
-                                    {game.name} {"  "}|{"  "}
-                                    <nobr className="text-muted small">
-                                        {game.gameConsole}
-                                    </nobr>
+                                    <GameListing game={game}/>
                                 </ListGroup.Item>
                             </ListGroup>
                         ))
@@ -130,11 +131,7 @@ function SearchBar(){
                         : gamesReturn.map(game => (
                             <ListGroup key={game.name}>
                                 <ListGroup.Item >
-                                    <Image src={game.img} style={{width: "20px"}}/>
-                                    {game.name} {"  "}|{"  "}
-                                    <nobr className="text-muted small">
-                                        {game.gameConsole}
-                                    </nobr>
+                                    <GameListing game={game}/>
                                 </ListGroup.Item>
                             </ListGroup>
                         ))
