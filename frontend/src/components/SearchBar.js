@@ -2,6 +2,7 @@ import {Form, Image, ListGroup, Tooltip} from "react-bootstrap";
 import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
+import {MediaQuery, useMediaQuery} from 'react-responsive';
 
 function SearchBar(){
 
@@ -9,12 +10,27 @@ function SearchBar(){
     *
     *   TODO: WIP Still.
     *    - Clear game array when search box is empty
-    *    - Fix styling of search results.
     *    - Add link to each game that returns
     *    - Limit array to X amount of results returned (possibly on back-end call to mongo)
     *
     * */
 
+    const Desktop = ({children}) => {
+        const isDesktop = useMediaQuery({minWidth:992})
+        return isDesktop ? children : null;
+    }
+    const Tablet = ({children}) => {
+        const isTablet = useMediaQuery({minWidth:768, maxWidth:991})
+        return isTablet ? children : null;
+    }
+    const Mobile = ({children}) => {
+        const isMobile = useMediaQuery({maxWidth:767, minWidth: 638})
+        return isMobile ? children : null;
+    }
+    const Minimum = ({children}) => {
+        const isMin = useMediaQuery({maxWidth:637})
+        return isMin ? children : null;
+    }
 
     const [searchText, setSearchText] = useState("");
     const [gamesReturn, setGamesReturn] = useState([{name:null, _id:""}]);
@@ -52,27 +68,95 @@ function SearchBar(){
             <Form.Control
                 type="search"
                 placeholder="Search"
-                className="me-2 w-100"
+                className="me-2 w-100 ms-3"
                 aria-label="Search"
                 onChange={handleSearch}
+                style={{maxWidth: "600px", minWidth: "230px"}}
             />
-            <Form.Text
-                className={"w-100"}
-                style={{position: "fixed", zIndex: "2", top:"100px"}}
-            >
-                {searchText === ""
-                    ? <></>
-                    : gamesReturn.map(game => (
-                        <ListGroup key={game.name}>
-                            <ListGroup.Item>
-                                <Image src={game.img} style={{width: "20px"}}/>
-                                {game.name}
-                                {game.console}
-                            </ListGroup.Item>
-                        </ListGroup>
-                    ))
-                }
-            </Form.Text>
+            <Desktop>
+                <Form.Text
+                    style={{position: "absolute", zIndex: "2", top:"100px",
+                    marginLeft: "20px", marginRight: "50px"}}
+                >
+                    {searchText === ""
+                        ? <></>
+                        : gamesReturn.map(game => (
+                            <ListGroup key={game.name}>
+                                <ListGroup.Item>
+                                    <Image src={game.img}
+                                           style={{width: "20px"}}/>
+                                    {game.name} {"  "}|{"  "}
+                                    <nobr className="text-muted small">
+                                            {game.gameConsole}
+                                    </nobr>
+                                </ListGroup.Item>
+                            </ListGroup>
+                        ))
+                    }
+                </Form.Text>
+            </Desktop>
+            <Tablet>
+                <Form.Text
+                    style={{position: "absolute", zIndex: "2", top: "405px",
+                    marginLeft: "20px", width:"590px"}}>
+                    {searchText === ""
+                        ? <></>
+                        : gamesReturn.map(game => (
+                            <ListGroup key={game.name}>
+                                <ListGroup.Item>
+                                    <Image src={game.img} style={{width: "20px"}}/>
+                                    {game.name} {"  "}|{"  "}
+                                    <nobr className="text-muted small">
+                                        {game.gameConsole}
+                                    </nobr>
+                                </ListGroup.Item>
+                            </ListGroup>
+                        ))
+                    }
+                </Form.Text>
+            </Tablet>
+            <Mobile>
+                <Form.Text
+                    style={{position: "absolute", zIndex: "2",
+                        width: "590px", top: "405px", marginLeft: "20px"}}
+                >
+                    {searchText === ""
+                        ? <></>
+                        : gamesReturn.map(game => (
+                            <ListGroup key={game.name}>
+                                <ListGroup.Item>
+                                    <Image src={game.img} style={{width: "20px"}}/>
+                                    {game.name} {"  "}|{"  "}
+                                    <nobr className="text-muted small">
+                                        {game.gameConsole}
+                                    </nobr>
+                                </ListGroup.Item>
+                            </ListGroup>
+                        ))
+                    }
+                </Form.Text>
+            </Mobile>
+            <Minimum>
+                <Form.Text
+                    style={{position: "absolute", zIndex: "2",
+                        width: "490px", top: "440px", marginLeft: "20px"}}
+                >
+                    {searchText === ""
+                        ? <></>
+                        : gamesReturn.map(game => (
+                            <ListGroup key={game.name}>
+                                <ListGroup.Item >
+                                    <Image src={game.img} style={{width: "20px"}}/>
+                                    {game.name} {"  "}|{"  "}
+                                    <nobr className="text-muted small">
+                                        {game.gameConsole}
+                                    </nobr>
+                                </ListGroup.Item>
+                            </ListGroup>
+                        ))
+                    }
+                </Form.Text>
+            </Minimum>
         </Form>
     )
 }
