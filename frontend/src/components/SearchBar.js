@@ -28,18 +28,22 @@ function SearchBar(){
         }
     }
     const GameListing = (game) => {
-        return <a href={`/games/${game.game._id}`}
-                     style={{textDecoration: "none"}}>
-            <Image src={game.game.img}
-                   style={{width: "20px", marginRight: "5px"}}/>
-            <nobr style={{borderRight: "1px solid black",
-                paddingRight: "10px"}}>
-                {game.game.name}
-            </nobr>
-            <nobr className="text-muted small ps-2">
-                {game.game.gameConsole}
-            </nobr>
-        </a>
+        return <ListGroup key={game.name}>
+            <ListGroup.Item>
+                <a href={`/games/${game.game._id}`}
+                   style={{textDecoration: "none"}}>
+                    <Image src={game.game.img}
+                           style={{width: "20px", marginRight: "5px"}}/>
+                    <nobr style={{borderRight: "1px solid black",
+                        paddingRight: "10px"}}>
+                        {game.game.name}
+                    </nobr>
+                    <nobr className="text-muted small ps-2">
+                        {game.game.gameConsole}
+                    </nobr>
+                </a>
+            </ListGroup.Item>
+        </ListGroup>
     }
 
     if(!gamesReturn){
@@ -64,11 +68,7 @@ function SearchBar(){
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
@@ -80,11 +80,7 @@ function SearchBar(){
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
@@ -97,11 +93,7 @@ function SearchBar(){
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
@@ -114,11 +106,7 @@ function SearchBar(){
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item >
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
