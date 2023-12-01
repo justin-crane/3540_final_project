@@ -1,4 +1,4 @@
-import {Form, Image, ListGroup} from "react-bootstrap";
+import {Card, Form, Image, ListGroup, OverlayTrigger, Stack, Tooltip} from "react-bootstrap";
 import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
@@ -41,6 +41,45 @@ function SearchBar(){
                     <nobr className="text-muted small ps-2">
                         {game.game.gameConsole}
                     </nobr>
+                    <Stack
+                        direction="horizontal" gap={2}
+                        style={{ display: "inline", paddingLeft: "10px"
+                        }}>
+                        {game.game.forTrade === "true" || game.game.forTrade === true
+                            ? <OverlayTrigger
+                                overlay={
+                                    <Tooltip id={`tooltip${game.game.name}`}>
+                                        For Trade!
+                                    </Tooltip>
+                                }>
+                                <Image
+                                          src={"/images/for_trade_icon.png"}
+                                          style={{
+                                              width: "30px",
+                                              minWidth: "30px",
+                                          }}/>
+                            </OverlayTrigger>
+
+                            : <></>
+                        }
+                        {game.game.forSale === "true" || game.game.forSale === true
+                            ? <OverlayTrigger
+                                overlay={
+                                    <Tooltip id={`tooltip${game.game.name}`}>
+                                        For Sale!
+                                    </Tooltip>
+                                }>
+                                <Image
+                                          src={"/images/for_sale_icon.png"}
+                                          style={{
+                                              width: "30px",
+                                              minWidth: "30px",
+                                              marginLeft: "10px",
+                                          }}/>
+                            </OverlayTrigger>
+                            : <></>
+                        }
+                    </Stack>
                 </a>
             </ListGroup.Item>
         </ListGroup>
@@ -75,7 +114,7 @@ function SearchBar(){
             </Desktop>
             <Tablet>
                 <Form.Text
-                    style={{position: "absolute", zIndex: "2", top: "405px",
+                    style={{position: "absolute", zIndex: "2", top: "395px",
                     marginLeft: "20px", width:"590px"}}>
                     {searchText === ""
                         ? <></>
@@ -88,7 +127,7 @@ function SearchBar(){
             <Mobile>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2",
-                        width: "590px", top: "405px", marginLeft: "20px"}}
+                        width: "590px", top: "395px", marginLeft: "20px"}}
                 >
                     {searchText === ""
                         ? <></>

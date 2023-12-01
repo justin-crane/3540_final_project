@@ -1,5 +1,5 @@
 import GameCard from "../components/GameCard";
-import {Row} from "react-bootstrap";
+import {Col, Row} from "react-bootstrap";
 import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import Container from "react-bootstrap/Container";
@@ -22,15 +22,14 @@ const GameCollection = (args) => {
     return (
         <>
             <h1 className={"text-center pt-3 text-decoration-underline"}>Recent Additions</h1>
-            <Container className={"text-center"}>
-                <Row xs={1}
-                     md={2} lg={4}
-                     className={""}>
-                            {gameList.map(game => (
-                                <GameCard key={game._id} gameId={game._id} gameList={gameList}/>
+                <Row
+                     style={{display: "flex", justifyContent: "center", alignContent: "center", margin: "30px"}}>
+                    {gameList.map(game => (
+                        <Col>
+                            <GameCard key={game._id} gameId={game._id} gameList={gameList}/>
+                        </Col>
                             ))}
                 </Row>
-            </Container>
         </>
     );
 }

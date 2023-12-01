@@ -16,7 +16,7 @@ function NavigationBar(){
     }
     return (
         <Navbar expand={"lg"} className={"bg-body-tertiary"}
-                style={{marginLeft: "0px", marginRight: "0px"}}>
+                style={{marginLeft: "0px", marginRight: "0px", minHeight: "170px", zIndex: "2"}}>
                 <Navbar.Brand href={"/"} className={"pl-4"}>
                     <LogoImage/>
                     Video Game Trade Centre
