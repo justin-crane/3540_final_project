@@ -1,4 +1,4 @@
-import {Card, Form, Image, ListGroup, OverlayTrigger, Stack, Tooltip} from "react-bootstrap";
+import {Form, Image, ListGroup, OverlayTrigger, Stack, Tooltip} from "react-bootstrap";
 import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
@@ -43,7 +43,7 @@ function SearchBar(){
                     </nobr>
                     <Stack
                         direction="horizontal" gap={2}
-                        style={{ display: "inline", paddingLeft: "10px"
+                        style={{ display: "inline"
                         }}>
                         {game.game.forTrade === "true" || game.game.forTrade === true
                             ? <OverlayTrigger
@@ -52,14 +52,13 @@ function SearchBar(){
                                         For Trade!
                                     </Tooltip>
                                 }>
-                                <Image
-                                          src={"/images/for_trade_icon.png"}
+                                <Image src={"/images/for_trade_icon.png"}
                                           style={{
                                               width: "30px",
                                               minWidth: "30px",
+                                              marginLeft: "10px"
                                           }}/>
                             </OverlayTrigger>
-
                             : <></>
                         }
                         {game.game.forSale === "true" || game.game.forSale === true
@@ -69,8 +68,7 @@ function SearchBar(){
                                         For Sale!
                                     </Tooltip>
                                 }>
-                                <Image
-                                          src={"/images/for_sale_icon.png"}
+                                <Image src={"/images/for_sale_icon.png"}
                                           style={{
                                               width: "30px",
                                               minWidth: "30px",
@@ -102,8 +100,7 @@ function SearchBar(){
             <Desktop>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2", top:"100px",
-                    marginLeft: "20px", marginRight: "50px"}}
-                >
+                    marginLeft: "20px", marginRight: "50px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
@@ -127,8 +124,7 @@ function SearchBar(){
             <Mobile>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2",
-                        width: "590px", top: "395px", marginLeft: "20px"}}
-                >
+                        width: "590px", top: "395px", marginLeft: "20px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
@@ -140,8 +136,7 @@ function SearchBar(){
             <Minimum>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2",
-                        width: "490px", top: "440px", marginLeft: "20px"}}
-                >
+                        width: "490px", top: "440px", marginLeft: "20px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (

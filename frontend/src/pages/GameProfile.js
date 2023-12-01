@@ -1,13 +1,6 @@
 import {useParams} from "react-router-dom";
-import Container from 'react-bootstrap/Container'
 import Image from "react-bootstrap/Image";
 import {Card, Col, ListGroup, OverlayTrigger, Row, Stack, Tooltip} from "react-bootstrap";
-
-/*
-*
-*   TODO: - Display the return information of this game in a better layout.
-*
-* */
 
 const GameProfile = (args) => {
     const {gameList} = args;
@@ -91,7 +84,7 @@ const GameProfile = (args) => {
                             <ListGroup.Item>Console: {game.gameConsole}</ListGroup.Item>
                         </ListGroup>
                         <ListGroup className="list-group-flush">
-                            <ListGroup.Item>Condition: {game.condition}</ListGroup.Item>
+                            <ListGroup.Item>Condition: {game.condition} / 5</ListGroup.Item>
                         </ListGroup>
                         <ListGroup className="list-group-flush">
                             <ListGroup.Item>Date added: {game.dateAdded}</ListGroup.Item>

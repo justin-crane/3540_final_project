@@ -25,8 +25,8 @@ const GameCollection = (args) => {
                 <Row
                      style={{display: "flex", justifyContent: "center", alignContent: "center", margin: "30px"}}>
                     {gameList.map(game => (
-                        <Col>
-                            <GameCard key={game._id} gameId={game._id} gameList={gameList}/>
+                        <Col key={game._id} >
+                            <GameCard gameId={game._id} gameList={gameList}/>
                         </Col>
                             ))}
                 </Row>
