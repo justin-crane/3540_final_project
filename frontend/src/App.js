@@ -2,6 +2,7 @@ import './App.css';
 import GameProfile from "./pages/GameProfile";
 import GameCollection from "./pages/GameCollection";
 import UserProfile from "./pages/UserProfile";
+import OtherUserProfile from "./pages/OtherUserProfile";
 import {Route, Routes, BrowserRouter} from "react-router-dom";
 import RandomGame from "./pages/RandomGame";
 import {LogInPage} from "./pages/LogInPage";
@@ -49,6 +50,7 @@ function App() {
                         <Route path={"/games/:gameId"} element={<GameProfile gameList={gameList} setGameList={setGameList}/>} />
                         <Route path={"/addgame"} element={<AddGame/>}/>
                         <Route path={"/user"} element={<UserProfile/>} />
+                        <Route path={"/user/:id"} element={<OtherUserProfile/>} />
                         <Route path={`/games/random`} element={<RandomGame gameList={gameList} randomGameId={randomGame[0]._id} />} />
                         <Route path={"/login"} element={<LogInPage />} />
                         <Route path={"/signup"} element={<SignUpPage />} />
