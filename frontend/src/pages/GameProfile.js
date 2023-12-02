@@ -75,7 +75,10 @@ const GameProfile = (args) => {
                         >{game.name}</Card.Header>
                         <ListGroup className="list-group-flush">
                             <ListGroup.Item
-                                className={"text-muted h6 pt-1"}>Added by: {game.userInfo.username}</ListGroup.Item>
+                                className={"text-muted h6 pt-1"}>Added by:
+                                <a href={"/user/" + game.userInfo.userID}>
+                                    {game.userInfo.username}
+                                </a></ListGroup.Item>
                         </ListGroup>
                         <ListGroup className="list-group-flush">
                             <ListGroup.Item>Price: ${game.price}</ListGroup.Item>

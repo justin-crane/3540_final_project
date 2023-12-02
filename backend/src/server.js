@@ -536,7 +536,17 @@ app.get('/api/user', authenticateToken, async (req, res) => {
     }
 });
 
-
+app.get('/api/user/:userid', async (req, res) => {
+    try {
+        const userId = req.params;
+        console.log("user: " + userId.userid);
+        const games = await db.collection('gamelist').find({ 'userInfo.userID': userId.userid }).toArray();
+        res.json(games);
+    } catch (error) {
+        console.error('Error fetching user games:', error);
+        res.status(500).send('Error fetching user games');
+    }
+});
 /*
 
     PriceCharting API Integration
