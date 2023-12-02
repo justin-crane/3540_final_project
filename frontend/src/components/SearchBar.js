@@ -1,4 +1,4 @@
-import {Form, Image, ListGroup} from "react-bootstrap";
+import {Form, Image, ListGroup, OverlayTrigger, Stack, Tooltip} from "react-bootstrap";
 import {useState} from "react";
 import axios from "axios";
 import {useDebouncedCallback} from "use-debounce";
@@ -28,18 +28,59 @@ function SearchBar(){
         }
     }
     const GameListing = (game) => {
-        return <a href={`/games/${game.game._id}`}
-                     style={{textDecoration: "none"}}>
-            <Image src={game.game.img}
-                   style={{width: "20px", marginRight: "5px"}}/>
-            <nobr style={{borderRight: "1px solid black",
-                paddingRight: "10px"}}>
-                {game.game.name}
-            </nobr>
-            <nobr className="text-muted small ps-2">
-                {game.game.gameConsole}
-            </nobr>
-        </a>
+        return <ListGroup key={game.name}>
+            <ListGroup.Item>
+                <a href={`/games/${game.game._id}`}
+                   style={{textDecoration: "none"}}>
+                    <Image src={game.game.img}
+                           style={{width: "20px", marginRight: "5px"}}/>
+                    <nobr style={{borderRight: "1px solid black",
+                        paddingRight: "10px"}}>
+                        {game.game.name}
+                    </nobr>
+                    <nobr className="text-muted small ps-2">
+                        {game.game.gameConsole}
+                    </nobr>
+                    <Stack
+                        direction="horizontal" gap={2}
+                        style={{ display: "inline"
+                        }}>
+                        {game.game.forTrade === "true" || game.game.forTrade === true
+                            ? <OverlayTrigger
+                                overlay={
+                                    <Tooltip id={`tooltip${game.game.name}`}>
+                                        For Trade!
+                                    </Tooltip>
+                                }>
+                                <Image src={"/images/for_trade_icon.png"}
+                                          style={{
+                                              width: "30px",
+                                              minWidth: "30px",
+                                              marginLeft: "10px"
+                                          }}/>
+                            </OverlayTrigger>
+                            : <></>
+                        }
+                        {game.game.forSale === "true" || game.game.forSale === true
+                            ? <OverlayTrigger
+                                overlay={
+                                    <Tooltip id={`tooltip${game.game.name}`}>
+                                        For Sale!
+                                    </Tooltip>
+                                }>
+                                <Image src={"/images/for_sale_icon.png"}
+                                          style={{
+                                              width: "30px",
+                                              minWidth: "30px",
+                                              marginLeft: "10px",
+                                          }}/>
+                            </OverlayTrigger>
+                            : <></>
+                        }
+                    </Stack>
+                </a>
+            </ListGroup.Item>
+        </ListGroup>
     }
 
     if(!gamesReturn){
@@ -59,32 +100,23 @@ function SearchBar(){
             <Desktop>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2", top:"100px",
-                    marginLeft: "20px", marginRight: "50px"}}
-                >
+                    marginLeft: "20px", marginRight: "50px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
             </Desktop>
             <Tablet>
                 <Form.Text
-                    style={{position: "absolute", zIndex: "2", top: "405px",
+                    style={{position: "absolute", zIndex: "2", top: "395px",
                     marginLeft: "20px", width:"590px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
@@ -92,16 +124,11 @@ function SearchBar(){
             <Mobile>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2",
-                        width: "590px", top: "405px", marginLeft: "20px"}}
-                >
+                        width: "590px", top: "395px", marginLeft: "20px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item>
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>
@@ -109,16 +136,11 @@ function SearchBar(){
             <Minimum>
                 <Form.Text
                     style={{position: "absolute", zIndex: "2",
-                        width: "490px", top: "440px", marginLeft: "20px"}}
-                >
+                        width: "490px", top: "440px", marginLeft: "20px"}}>
                     {searchText === ""
                         ? <></>
                         : gamesReturn.map(game => (
-                            <ListGroup key={game.name}>
-                                <ListGroup.Item >
-                                    <GameListing game={game}/>
-                                </ListGroup.Item>
-                            </ListGroup>
+                            <GameListing game={game}/>
                         ))
                     }
                 </Form.Text>

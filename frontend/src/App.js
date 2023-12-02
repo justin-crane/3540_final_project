@@ -13,9 +13,7 @@ import MessengerPage from "./pages/MessengerPage";
 import Image from "react-bootstrap/Image";
 
 
-
 function App() {
-  //code
 
     let [gameList, setGameList] = useState();
     const [randomGame, setRandomGame] = useState();

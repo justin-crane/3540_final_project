@@ -121,7 +121,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
             </Form.Group>
 
             {/* Game Console */}
-            <Form.Group controlId="formConsole">
+            <Form.Group className={"pt-2"} controlId="formConsole">
                 <Form.Label>Console</Form.Label>
                 <Form.Select
                     name="gameConsole"
@@ -134,7 +134,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
             </Form.Group>
 
             {/* Condition */}
-            <Form.Group controlId="formCondition">
+            <Form.Group className={"pt-2"} controlId="formCondition">
                 <Form.Label>Condition</Form.Label>
                 <Form.Select
                     name="condition"
@@ -147,7 +147,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
             </Form.Group>
 
             {/* For Trade */}
-            <Form.Group controlId="forTrade">
+            <Form.Group className={"pt-2"} controlId="forTrade">
                 <Form.Label>For Trade</Form.Label>
                 <Form.Select
                     name="forTrade"
@@ -159,7 +159,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
             </Form.Group>
 
             {/* For Sale */}
-            <Form.Group controlId="forSale">
+            <Form.Group className={"pt-2"} controlId="forSale">
                 <Form.Label>For Sale</Form.Label>
                 <Form.Select
                     name="forSale"
@@ -170,9 +170,9 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
                 </Form.Select>
             </Form.Group>
             {/* Price */}
-            <Form.Group id={"formPrice"} controlId={"formPrice"}>
+            <Form.Group className={"pt-2"} id={"formPrice"} controlId={"formPrice"}>
                 <Stack direction={"horizontal"}>
-                    <Form.Label>Price</Form.Label>
+                    <Form.Label className={"pe-1"}>Price </Form.Label>
                     <InputGroup.Text>$</InputGroup.Text>
                     <Form.Control
                         type="number"
@@ -186,7 +186,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
                 </Stack>
             </Form.Group>
             {/* Notes */}
-            <Form.Group controlId="formNotes">
+            <Form.Group className={"pt-2"} controlId="formNotes">
                 <Form.Label>Notes</Form.Label>
                 <Form.Control
                     type="text"
@@ -196,7 +196,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
                     onChange={handleChange}/>
             </Form.Group>
             {/* Image Upload */}
-            <Form.Group controlId="formIMG">
+            <Form.Group className={"pt-2"} controlId="formIMG">
                 <Form.Label>Image Upload</Form.Label>
                 <Form.Control
                     type="file"
@@ -206,7 +206,7 @@ export const EditGameForm = ({ game, handleUpdate, cancelEdit }) => {
             </Form.Group>
 
             {/* Buttons */}
-            <Stack direction="horizontal" gap={2}>
+            <Stack className={"pt-3 justify-content-center"} direction="horizontal" gap={2}>
                 <Button variant="secondary" onClick={cancelEdit}>Cancel</Button>
                 <Button type="submit" variant="primary">Save Changes</Button>
             </Stack>

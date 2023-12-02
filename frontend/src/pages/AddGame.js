@@ -52,7 +52,7 @@ export  function AddGame(){
             value = value === 'true'; // This converts the string "true" to boolean true
         }
 
-        console.log("ADD GAME KEY VALUE: " + key + ", " + value);
+        console.log("Updated values: " + key + ", " + value);
         setGameFormData({...gameFormData, [key]: value});
     }
     const handleFile = (e) => {
@@ -87,7 +87,7 @@ export  function AddGame(){
             forSale: gameFormData.forSale,
             price: gameFormData.formPrice,
             notes: gameFormData.formNotes,
-            dateAdded: new Date(),
+            dateAdded: new Date().getFullYear() +  ", " + new Date().getMonth() + ", " + new Date().getDay(),
             img: imgLoc,
             userInfo: {
                 username: gameFormData.username,
@@ -100,18 +100,23 @@ export  function AddGame(){
         try {
             const updatedData = await getGame(data, gameFormData);
             console.log("Updated Data: ", updatedData);
-            data = { ...data, ...updatedData }; // Merge updated data with local data
-
+            data = {...data, ...updatedData}; // Merge updated data with local data
+            console.log("Price API pull successful.")
+        } catch (error) {
+            console.error('Error in getGame from Price API.', error);
+        }
+        try {
             const token = localStorage.getItem('token');
             const responseGames = await axios.post('http://localhost:3001/api/addgame', data, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log("ADD GAME RETURN DATA: ", responseGames.data);
-            alert(`${data.name} submitted successfully.`);
             setGameList([...gameList, responseGames.data]); // Update the game list
+            alert(`${data.name} submitted successfully.`);
         } catch (error) {
-            console.error('Error in getGameFromAPI or adding game:', error);
-            // Handle errors from getGameFromAPI or game submission
+            console.error('Error adding game to DB:', error);
+            //alert(`Error adding ${data.name}. If error persists, please log out and log in again.`);
+            // Handle errors from getGame or game submission
         }
 
         setLoading(false);

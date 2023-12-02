@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {Button, Card, Col, ListGroup, Modal, Row} from "react-bootstrap";
 import { EditGameForm } from './EditGameForm';
-
+import Container from "react-bootstrap/Container";
 
 const UserProfile = () => {
     const [games, setGames] = useState([]);
-    const [userData, setUserData] = useState(null);  // State for user data
+    const [userData, setUserData] = useState([{userInfo:{username:"(Unknown Username)"}}]);  // State for user data
     const [loading, setLoading] = useState(true);    // State for loading indicator
     const [editingGame, setEditingGame] = useState(null); // State to track which game is being edited
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     const [formData, setFormData] = useState({ // State for form data
         name: '',
         gameConsole: '',
@@ -85,6 +90,7 @@ const UserProfile = () => {
 
     // Function to handle edit button click
     const handleEdit = (game) => {
+        handleShow();
         setEditingGame(game); // Set the game to be edited
     };
 
@@ -106,14 +112,13 @@ const UserProfile = () => {
         } catch (error) {
             console.error('Error updating game:', error);
         }
+        handleClose();
     };
-
 
     // Function to cancel editing
     const cancelEdit = () => {
         setEditingGame(null);
     };
-
 
     if (loading) {
         return <div>Loading...</div>; // Show loading indicator
@@ -121,36 +126,85 @@ const UserProfile = () => {
 
     // Render user profile
     return (
-        <div>
-            <h2>Your Profile</h2>
-            {/* Display user data here */}
+
+        <Container>
+            <h2>Profile for: {userData[0].userInfo.username}</h2>
             <h3>Your Games</h3>
-            <ul>
+            <Row style={{border: "1px solid #000000", borderRadius: "10px", padding: "10px"}}>
                 {games.map(game => (
-                    <li key={game._id} style={{ marginBottom: '20px' }}>
-                        <img src={game.img} alt={`Cover of ${game.name}`} style={{ width: '100px', height: 'auto' }} />
-                        <strong>{game.name}</strong>
-                        <div>Console: {game.gameConsole}</div>
-                        <div>Condition: {game.condition}</div>
-                        <div>For Trade: {game.forTrade ? 'Yes' : 'No'}</div>
-                        <div>For Sale: {game.forSale ? 'Yes' : 'No'}</div>
-                        <div>Price: ${game.price}</div>
-                        <div>Notes: {game.notes}</div>
-                        {/* Edit and delete buttons */}
-                        <button onClick={() => handleEdit(game)}>Edit</button>
-                        <button onClick={() => handleDelete(game._id)}>Delete</button>
-                    </li>
+                    <Col key={game._id} className={"text-center"}
+                         style={{display: "flex",
+                             justifyContent: "center",
+                             alignContent: "center",
+                             margin: "30px"}}>
+                        <Card border={"dark"}
+                              style={{
+                                  width: "300px", objectFit: "contain"}}>
+                            <Card.Img variant="top"
+                                      src={game.img}
+                                      style={{objectFit: "cover", height: "150px"}} />
+                            <Card.Header as="h4">{game.name}</Card.Header>
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item style={{fontSize: ".7rem"}}
+                                                className={"text-muted pt-1"}>Added by: {game.userInfo.username}</ListGroup.Item>
+                            </ListGroup>
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item style={{fontSize: ".7rem"}}>Price: ${game.price}</ListGroup.Item>
+                            </ListGroup>
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item style={{fontSize: ".7rem"}}>Console: {game.gameConsole}</ListGroup.Item>
+                            </ListGroup>
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item style={{fontSize: ".7rem"}}>Condition: {game.condition} / 5</ListGroup.Item>
+                            </ListGroup>
+                            <ListGroup className="list-group-flush">
+                                <ListGroup.Item style={{fontSize: ".7rem"}}>Date added: {game.dateAdded}</ListGroup.Item>
+                            </ListGroup>
+                            <ListGroup className="list-group-flush" style={{fontSize: ".7rem"}}>
+                                {game.forTrade === "true" || game.forTrade === true
+                                    ? <ListGroup.Item>For Trade? Yes</ListGroup.Item>
+                                    : <ListGroup.Item>For Trade? No</ListGroup.Item>
+                                }
+                            </ListGroup>
+                            <ListGroup className="list-group-flush" style={{fontSize: ".7rem"}}>
+                                {game.forSale === "true" || game.forSale === true
+                                    ? <ListGroup.Item>For Sale? Yes</ListGroup.Item>
+                                    : <ListGroup.Item>For Sale? No</ListGroup.Item>
+                                }
+                            </ListGroup>
+                            <Card.Footer className="text-muted" style={{fontSize: ".7rem"}}>
+                                Notes: {game.notes}
+                            </Card.Footer>
+                            <Button
+                                style={{position: "absolute", top: "10px", left: "220px"}}
+                                onClick={() => handleDelete(game._id)}>Delete</Button>
+                            <Button
+                                variant={"warning"}
+                                style={{position: "absolute", top: "53px", left: "238px"}}
+                                onClick={() => handleEdit(game)}>Edit</Button>
+                        </Card>
+                    </Col>
                 ))}
-            </ul>
+            </Row>
             {/* Conditional rendering for editing a game */}
             {editingGame && (
-                <EditGameForm
-                    game={editingGame}
-                    handleUpdate={handleUpdate}
-                    cancelEdit={cancelEdit}
-                />
+                <Modal
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Edit {editingGame.name}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <EditGameForm
+                            game={editingGame}
+                            handleUpdate={handleUpdate}
+                            cancelEdit={cancelEdit}
+                        />
+                    </Modal.Body>
+                </Modal>
             )}
-        </div>
+        </Container>
     );
 };
 
