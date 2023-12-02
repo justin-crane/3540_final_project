@@ -87,7 +87,7 @@ export  function AddGame(){
             forSale: gameFormData.forSale,
             price: gameFormData.formPrice,
             notes: gameFormData.formNotes,
-            dateAdded: new Date(),
+            dateAdded: new Date().getFullYear() +  ", " + new Date().getMonth() + ", " + new Date().getDay(),
             img: imgLoc,
             userInfo: {
                 username: gameFormData.username,
@@ -111,11 +111,11 @@ export  function AddGame(){
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log("ADD GAME RETURN DATA: ", responseGames.data);
-            alert(`${data.name} submitted successfully.`);
             setGameList([...gameList, responseGames.data]); // Update the game list
+            alert(`${data.name} submitted successfully.`);
         } catch (error) {
             console.error('Error adding game to DB:', error);
-            alert(`Error adding ${data.name}. If error persists, please log out and log in again.`);
+            //alert(`Error adding ${data.name}. If error persists, please log out and log in again.`);
             // Handle errors from getGame or game submission
         }
 
