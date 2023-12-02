@@ -439,14 +439,25 @@ app.delete('/api/deletegame/:id', authenticateToken, async (req, res) => {
 // User can modify a game on their profile
 app.put('/api/modifygame/:id', authenticateToken, async (req, res) => {
     const gameId = req.params.id;
-    const userId = req.user.id; // Extracted from the JWT token
-    const updateData = req.body; // Data to update
+    const userId = req.user.id;
+    let updateData = req.body;
+
+    // Remove _id from update data
+    delete updateData._id;
+
+    // Convert forTrade and forSale from string to boolean, similar to addgame
+    if (typeof updateData.forTrade === 'string') {
+        updateData.forTrade = updateData.forTrade === 'true';
+    }
+    if (typeof updateData.forSale === 'string') {
+        updateData.forSale = updateData.forSale === 'true';
+    }
 
     try {
-        const result = await db.collection('gamelist').updateOne({
-            _id: new ObjectId(gameId),
-            userId
-        }, {$set: updateData});
+        const result = await db.collection('gamelist').updateOne(
+            { _id: new ObjectId(gameId), 'userInfo.userID': userId },
+            { $set: updateData }
+        );
         if (result.matchedCount === 0) {
             return res.status(404).send('No game found with this id for the user');
         }
