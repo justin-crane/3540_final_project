@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { io } from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
+import { useLocation } from "react-router-dom";
 
 const socket = io.connect('http://localhost:3002');
 
@@ -50,13 +51,6 @@ const MessengerPage = () => {
 
     const submit = async (e) => {
         e.preventDefault();
-        if (localStorage.getItem("token")){
-            setSender(jwtDecode(localStorage.getItem("token")).email);
-        }
-        else {
-            alert("You must be logged in to send a message.");
-        }
-        setRecipient(messageData.recipient);
         console.log(sender);
         console.log(recipient);
         let data = {
@@ -73,13 +67,24 @@ const MessengerPage = () => {
             sendMessage();
         }
     }
+    const location = useLocation();
+    useEffect(() => {
+        if (localStorage.getItem("token")){
+            setSender(jwtDecode(localStorage.getItem("token")).username);
+        } else {
+            alert("You must be logged in to send a message.");
+        }
+        setRecipient(location.state.recip);
+
+        loadMessages(sender, recipient).catch((e) => console.log(e));
+    }, [])
 
     useEffect(() => {
-        loadMessages(sender, recipient).catch((e) => console.log(e));
         socket.on("receive_message", (data) => {
             console.log(data);
             setMessageEvents(messageEvents);
         });
+        loadMessages(sender, recipient).catch((e) => console.log(e));
     }, [submit, socket]);
 
     return (
@@ -101,15 +106,6 @@ const MessengerPage = () => {
             <div className="w-75 mx-auto">
                 <h1>Send a message</h1>
                 <Form onSubmit={submit} >
-                    <Form.Group id="formRecipient" controlId="formRecipient">
-                        <Form.Label>Recipient:</Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="user Name"
-                            name="recipient"
-                            onChange={updateMessageForm}/>
-                    </Form.Group>
                     <Form.Group id="formMessage" controlId="formMessage">
                         <Form.Label></Form.Label>
                         <Form.Control

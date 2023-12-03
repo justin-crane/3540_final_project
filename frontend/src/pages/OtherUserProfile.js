@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Button, Card, Col, ListGroup, Modal, Row} from "react-bootstrap";
-import { EditGameForm } from './EditGameForm';
 import Container from "react-bootstrap/Container";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
+
 
 const OtherUserProfile = () => {
     const id = useParams().id;
     const [games, setGames] = useState([]);
     const [userData, setUserData] = useState([{userInfo:{username:"(Unknown Username)"}}]);  // State for user data
     const [loading, setLoading] = useState(true);    // State for loading indicator
-    const [editingGame, setEditingGame] = useState(null); // State to track which game is being edited
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -60,6 +59,10 @@ const OtherUserProfile = () => {
         }
     };
 
+    const sendMessage = () => {
+
+    }
+
     useEffect(() => {
         fetchGames(id);
         fetchUserData(id);
@@ -75,6 +78,13 @@ const OtherUserProfile = () => {
 
         <Container>
             <h2>Profile for: {userData[0].userInfo.username}</h2>
+            <Link
+                to= '/messenger'
+                state={{
+                    recip: userData[0].userInfo.username
+            }}>
+            <Button>Send Message</Button>
+            </Link>
             <h3>Your Games</h3>
             <Row style={{border: "1px solid #000000", borderRadius: "10px", padding: "10px"}}>
                 {games.map(game => (
