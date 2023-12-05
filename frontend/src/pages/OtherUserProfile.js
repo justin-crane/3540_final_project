@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {Button, Card, Col, ListGroup, Modal, Row} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
-import {Link, useParams} from "react-router-dom";
-import {EditGameForm} from "./EditGameForm";
+import { useParams} from "react-router-dom";
 import MessengerPage from "./MessengerPage";
 
 
@@ -81,7 +80,6 @@ const OtherUserProfile = () => {
         return <div>Loading...</div>; // Show loading indicator
     }
 
-    // Render user profile
     return (
 
         <Container>
@@ -99,12 +97,6 @@ const OtherUserProfile = () => {
                     <MessengerPage recip={userData[0].userInfo.username} />
                 </Modal.Body>
             </Modal>
-
-            {/*<Link*/}
-            {/*    to= '/messenger'*/}
-            {/*    >*/}
-            {/*<Button>Send Message</Button>*/}
-            {/*</Link>*/}
             <h3>Your Games</h3>
             <Row style={{border: "1px solid #000000", borderRadius: "10px", padding: "10px"}}>
                 {games.map(game => (
