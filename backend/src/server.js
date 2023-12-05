@@ -261,7 +261,18 @@ app.post('/api/message/', async (req, res) => {
     }
 })
 
+app.get('/api/messages/:username', async (req, res) => {
+    const { username } = req.params;
+    let userMessagesA = await db.collection('messages').find({
+        userB: username
+    }).toArray();
+    let userMessagesB = await db.collection('messages').find({
+        userA: username
+    }).toArray();
 
+    const userMessages = userMessagesA.concat(userMessagesB);
+    res.json(userMessages);
+})
 /*
 
     Game Collection API

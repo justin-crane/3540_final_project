@@ -20,6 +20,7 @@ const MessengerPage = () => {
     const [sender, setSender] = useState("");
     const [recipient, setRecipient] = useState("");
     const [messageEvents, setMessageEvents] = useState([]);
+    const [userMessages, setUserMessages] = useState([]);
 
     const joinRoom = () => {
         if (room !== "") {
@@ -39,9 +40,13 @@ const MessengerPage = () => {
         }
     };
 
-    useEffect(() => {
-        loadMessages(sender, recipient).catch((e) => console.log(e));
-    }, []);
+    const getAllMessages = async () => {
+        const user = jwtDecode(localStorage.getItem("token")).username;
+        const response = await axios.get(`/api/messages/${user}`);
+        console.log(response.data)
+        const messages = await response.data;
+        setUserMessages(messages);
+    }
 
     function updateMessageForm(e){
         const key = e.target.name;
@@ -77,6 +82,7 @@ const MessengerPage = () => {
         setRecipient(location.state.recip);
 
         loadMessages(sender, recipient).catch((e) => console.log(e));
+        getAllMessages().catch((e) => console.log(e));
     }, [])
 
     useEffect(() => {
