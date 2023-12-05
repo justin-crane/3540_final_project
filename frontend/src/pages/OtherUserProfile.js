@@ -3,6 +3,8 @@ import axios from 'axios';
 import {Button, Card, Col, ListGroup, Modal, Row} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import {Link, useParams} from "react-router-dom";
+import {EditGameForm} from "./EditGameForm";
+import MessengerPage from "./MessengerPage";
 
 
 const OtherUserProfile = () => {
@@ -11,6 +13,7 @@ const OtherUserProfile = () => {
     const [userData, setUserData] = useState([{userInfo:{username:"(Unknown Username)"}}]);  // State for user data
     const [loading, setLoading] = useState(true);    // State for loading indicator
     const [show, setShow] = useState(false);
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -69,6 +72,11 @@ const OtherUserProfile = () => {
 
     }, []);
 
+    const handleEdit = () => {
+        handleShow();
+    };
+
+
     if (loading) {
         return <div>Loading...</div>; // Show loading indicator
     }
@@ -78,13 +86,25 @@ const OtherUserProfile = () => {
 
         <Container>
             <h2>Profile for: {userData[0].userInfo.username}</h2>
-            <Link
-                to= '/messenger'
-                state={{
-                    recip: userData[0].userInfo.username
-            }}>
-            <Button>Send Message</Button>
-            </Link>
+            <Button
+                onClick={() => handleEdit()}>Send Message</Button>
+            <Modal
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Message {userData[0].userInfo.username}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <MessengerPage recip={userData[0].userInfo.username} />
+                </Modal.Body>
+            </Modal>
+
+            {/*<Link*/}
+            {/*    to= '/messenger'*/}
+            {/*    >*/}
+            {/*<Button>Send Message</Button>*/}
+            {/*</Link>*/}
             <h3>Your Games</h3>
             <Row style={{border: "1px solid #000000", borderRadius: "10px", padding: "10px"}}>
                 {games.map(game => (

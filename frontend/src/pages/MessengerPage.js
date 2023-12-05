@@ -1,14 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { io } from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
 import { useLocation } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import {Card} from "react-bootstrap";
 
 const socket = io.connect('http://localhost:3002');
 
-const MessengerPage = () => {
+const MessengerPage = (props) => {
 
     const [messageData, setMessageData] = useState({
         sender: "",
@@ -21,6 +23,10 @@ const MessengerPage = () => {
     const [recipient, setRecipient] = useState("");
     const [messageEvents, setMessageEvents] = useState([]);
     const [userMessages, setUserMessages] = useState([]);
+    const div = useRef(null);
+    useEffect(() => div.current.scrollIntoView ({
+        behavior: "smooth",
+        block: "end"}), [messageEvents.length]);
 
     const joinRoom = () => {
         if (room !== "") {
@@ -79,7 +85,8 @@ const MessengerPage = () => {
         } else {
             alert("You must be logged in to send a message.");
         }
-        setRecipient(location.state.recip);
+        setRecipient(props.recip);
+        //setRecipient(location.state.recip);
 
         loadMessages(sender, recipient).catch((e) => console.log(e));
         getAllMessages().catch((e) => console.log(e));
@@ -94,38 +101,60 @@ const MessengerPage = () => {
     }, [submit, socket]);
 
     return (
-        <div className="App container-lg">
-            <div id="messages">
-                <ul>
-                    {
-                        messageEvents.map((message, i) => (
-                            <li key={i}>
-                                <h3>{message.sender}</h3>
-                                <p>{message.message}</p>
-                                <p>sent@{new Date(message.timeStamp).toString()}</p>
-                            </li>
-                        ))
-                    }
-                </ul>
-            </div>
-        <footer>
-            <div className="w-75 mx-auto">
-                <h1>Send a message</h1>
-                <Form onSubmit={submit} >
-                    <Form.Group id="formMessage" controlId="formMessage">
-                        <Form.Label></Form.Label>
-                        <Form.Control
-                            required
-                            type="text"
-                            placeholder="Message"
-                            name="messageBody"
-                            onChange={updateMessageForm}/>
-                    </Form.Group>
-                    <Button type="submit" variant="outline-success m-3 w-25" >Send</Button>
-                </Form>
-            </div>
-        </footer>
-        </div>
+        <Container >
+            <Card style={{maxHeight: "750px"}}>
+                <Card.Body style={{maxHeight: "600px", overflow:"scroll"}}>
+                    <div id="messages">
+                        <ul>
+                            {
+                                messageEvents.map((message, i) => (
+                                    <Card key={i}
+                                    style={{marginRight: "5%", marginTop: "10px", marginBottom: "10px"}}
+                                    >
+                                        <Card.Header>
+                                            <Card.Text>Sent from: {message.sender}</Card.Text>
+                                        </Card.Header>
+                                        <Card.Body>
+                                            <Card.Text>
+                                                {message.message}
+                                            </Card.Text>
+                                        </Card.Body>
+                                        <Card.Footer>
+                                            <Card.Text
+                                                style={{fontSize:"0.75rem", textAlign:"left"}}>
+                                                Sent at{" "}
+                                                {new Date(message.timeStamp).getHours()}:
+                                                {new Date(message.timeStamp).getMinutes()} on {" "}
+                                                {new Date(message.timeStamp).getDate()}, {" "}
+                                                {new Date(message.timeStamp).getMonth()}, {" "}
+                                                {new Date(message.timeStamp).getFullYear()}
+                                            </Card.Text>
+                                        </Card.Footer>
+                                    </Card>
+                                ))
+                            }
+                        </ul>
+                        <div ref={div}/>
+                    </div>
+                </Card.Body>
+                <Card.Footer className={"text-center"}>
+                        <Card.Text>Send a message</Card.Text>
+                        <Form onSubmit={submit} >
+                            <Form.Group id="formMessage" controlId="formMessage">
+                                <Form.Label></Form.Label>
+                                <Form.Control
+                                    required
+                                    type="text"
+                                    placeholder="Message"
+                                    name="messageBody"
+                                    style={{height: "4rem"}}
+                                    onChange={updateMessageForm}/>
+                            </Form.Group>
+                            <Button type="submit" variant="outline-success m-3 w-25" >Send</Button>
+                        </Form>
+                </Card.Footer>
+            </Card>
+        </Container>
     );
 }
 
