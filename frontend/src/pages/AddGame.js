@@ -107,7 +107,7 @@ export  function AddGame(){
         }
         try {
             const token = localStorage.getItem('token');
-            const responseGames = await axios.post('http://localhost:3001/api/addgame', data, {
+            const responseGames = await axios.post('/api/addgame', data, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log("ADD GAME RETURN DATA: ", responseGames.data);

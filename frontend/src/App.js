@@ -22,10 +22,10 @@ function App() {
 
     useEffect(() => {
         const loadGames = async () => {
-            const response = await axios.get(`http://localhost:3000/api/gamelist/`);
+            const response = await axios.get(`/api/gamelist/`);
             const newGameList = await response.data;
             setGameList(newGameList);
-            const randomRes = await axios.get(`http://localhost:3000/api/randomgame/`);
+            const randomRes = await axios.get(`/api/randomgame/`);
             setRandomGame(await randomRes.data);
             setLoading(false);
         };

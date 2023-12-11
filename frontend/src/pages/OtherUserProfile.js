@@ -31,7 +31,7 @@ const OtherUserProfile = () => {
     const fetchUserData = async (id) => {
         try {
             console.log(id);
-            const response = await axios.get(`http://localhost:3001/api/user/`+ id, {
+            const response = await axios.get(`/api/user/`+ id, {
             });
             setUserData(response.data);
             console.log(response.data); // debug
@@ -43,7 +43,7 @@ const OtherUserProfile = () => {
     const fetchGames = async (id) => {
         try {
             console.log('Fetching games...');
-            const response = await axios.get(`http://localhost:3001/api/user/${id}`, {
+            const response = await axios.get(`/api/user/${id}`, {
             });
             console.log('Games fetched:', response.data);
             const processedGames = response.data.map(game => ({
