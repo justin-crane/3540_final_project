@@ -18,12 +18,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../build')));
+app.use(cors());
+
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+})
+
 const PORT = process.env.PORT || 3001;
 const messageServerPort = 3002;
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -83,11 +88,6 @@ const singleUpload = upload.single('img');
     Tester API
     
  */
-
-app.get(/^(?!\/api).+/, (req, res) => {
-    res.sendFile(path.join(__dirname, '../build/index.html'));
-})
-
 app.get('/api/hello/', async (req, res) => {
     res.send("Hello");
 })
@@ -102,7 +102,7 @@ app.get('/api/hello/', async (req, res) => {
 const oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    'http://54.210.56.142:3000/api/google/oauth' // Redirect URI set in Google Cloud
+    '/api/google/oauth' // Redirect URI set in Google Cloud
 );
 
 // Generate Google OAuth URL function

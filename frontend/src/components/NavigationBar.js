@@ -4,7 +4,6 @@ import LogoImage from "./LogoImage";
 import SearchBar from "./SearchBar";
 import {Desktop, Tablet, Mobile, Minimum} from "./MediaSettings"
 import {useState} from "react";
-import {useChannelSearch} from "stream-chat-react/dist/components/ChannelSearch/hooks/useChannelSearch";
 
 function NavigationBar(){
     const [isLoggedIn, setIsLoggedIn] = useState(false); // State for tracking login status
