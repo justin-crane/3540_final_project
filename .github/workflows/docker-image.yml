@@ -21,6 +21,6 @@ jobs:
             application_name: VGTC_webapp
             environment_name: VGTCwebapp-env
             version_label: ${{ github.sha }}
-            existing_bucket_name: 3540-vgtc
+            existing_bucket_name: elasticbeanstalk-us-east-1-630239569087
             region: us-east-1
             deployment_package: deploy.zip
