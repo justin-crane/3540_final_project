@@ -18,7 +18,7 @@ jobs:
           with:
             aws_access_key: ${{ secrets.AWS_ADMIN_ACCESS_KEY_ID }}
             aws_secret_key: ${{ secrets.AWS_ADMIN_SECRET_ACCESS_KEY_ID }}
-            application_name: 3540_final_project
+            application_name: VGTCwebapp
             environment_name: VGTCwebapp-env
             version_label: ${{ github.sha }}
             existing_bucket_name: 3540-vgtc
