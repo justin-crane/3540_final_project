@@ -32,7 +32,7 @@ export const LogInPage = () => {
         checkLoginStatus();
 
         // Fetch Google OAuth URL
-        fetch("http://localhost:3001/api/google/oauthURL")
+        fetch("/api/google/oauthURL")
             .then(response => response.json())
             .then(data => setGoogleURL(data.url))
             .catch(e => {
@@ -49,7 +49,7 @@ export const LogInPage = () => {
 
     const onLogInClicked = async () => {
         try {
-            const response = await fetch('http://localhost:3001/api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

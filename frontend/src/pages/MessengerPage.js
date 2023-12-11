@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import {Card} from "react-bootstrap";
 
-const socket = io.connect('http://localhost:3002');
+const socket = io.connect();
 
 const MessengerPage = (props) => {
 
@@ -38,7 +38,7 @@ const MessengerPage = (props) => {
     };
     const loadMessages = async (sender, recipient) => {
         if (sender !== ""){
-            const response = await axios.get(`http://localhost:3000/api/message/${sender}/${recipient}`);
+            const response = await axios.get(`/api/message/${sender}/${recipient}`);
             const messageList = await response.data.chatLog;
             setRoom(response.data._id);
             setMessageEvents(messageList);
