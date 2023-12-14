@@ -114,7 +114,7 @@ const oauthClient = new google.auth.OAuth2(
 
 // Generate Google OAuth URL function
 const getGoogleOauthURL = () => {
-    return oauthClient.generateAuthUrl({
+    const url = oauthClient.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',
         scope: [
@@ -122,6 +122,8 @@ const getGoogleOauthURL = () => {
             'https://www.googleapis.com/auth/userinfo.profile',
         ]
     });
+    console.log("Generated OAuth URL:", url);
+    return url;
 };
 const googleOauthURL = getGoogleOauthURL();
 
@@ -179,7 +181,6 @@ app.get('/api/google/oauth', async (req, res) => {
         res.status(500).json({ message: 'Error during Google OAuth' });
     }
 });
-
 /*
 
    Messenger API

@@ -34,7 +34,10 @@ export const LogInPage = () => {
         // Fetch Google OAuth URL
         fetch("https://vgtc.ca/api/google/oauthURL")
             .then(response => response.json())
-            .then(data => setGoogleURL(data.url))
+            .then(data => {
+                console.log("Received OAuth URL:", data.url);
+                setGoogleURL(data.url);
+            })
             .catch(e => {
                 console.error("Error fetching Google OAuth URL:", e);
                 setErrorMessage("Failed to fetch Google OAuth URL");
