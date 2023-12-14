@@ -5,7 +5,7 @@ services:
     container_name: vgtc_backend
     ports:
       - '80:3001'
-      - '443:3001'
+      - '443:443'
       - '3002:3002'
     volumes:
       - ./backend:/app
