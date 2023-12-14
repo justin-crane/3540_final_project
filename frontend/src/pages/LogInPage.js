@@ -32,7 +32,7 @@ export const LogInPage = () => {
         checkLoginStatus();
 
         // Fetch Google OAuth URL
-        fetch(":3001/api/google/oauthURL")
+        fetch("https://vgtc.ca/api/google/oauthURL")
             .then(response => response.json())
             .then(data => setGoogleURL(data.url))
             .catch(e => {
@@ -49,7 +49,7 @@ export const LogInPage = () => {
 
     const onLogInClicked = async () => {
         try {
-            const response = await fetch(':3001/api/login', {
+            const response = await fetch('https://vgtc.ca/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
