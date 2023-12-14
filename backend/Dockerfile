@@ -5,4 +5,4 @@ COPY package.json .
 RUN npm install
 COPY . .
 EXPOSE 3001 3002
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

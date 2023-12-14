@@ -4,10 +4,13 @@ services:
     build: ./backend
     container_name: vgtc_backend
     ports:
-      - '3001:3001'
+      - '80:3001'
+      - '443:443'
       - '3002:3002'
     volumes:
       - ./backend:/app
+      - ../../../etc/letsencrypt/live/vgtc.ca/privkey.pem:/etc/letsencrypt/live/vgtc.ca/privkey.pem
+      - ../../../etc/letsencrypt/live/vgtc.ca/fullchain.pem:/etc/letsencrypt/live/vgtc.ca/fullchain.pem
   client:
     build: ./frontend
     container_name: vgtc_frontend
