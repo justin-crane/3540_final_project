@@ -391,30 +391,6 @@ app.post('/api/addGameImage/', async (req, res) => {
         return res.json({'imageLocation': req.file.location});
     })
 });
-/* We have two addgames so i commented one out
-app.post('/api/addgame/', async (req, res) => {
-
-    let { name, gameConsole, img, condition, price,
-        forTrade, forSale, userInfo, username, userID, dateAdded, notes } = req.body;
-
-    userInfo = {
-        "username": username,
-        "userID": userID
-    }
-
-    let game = await db.collection('gamelist').insertOne({
-        name, gameConsole, img, condition, forTrade, forSale,
-        userInfo, price, dateAdded, notes
-    });
-    let gameArray = await db.collection('gamelist').find({}).toArray();
-    if (gameArray){
-        res.json(gameArray);
-
-    } else {
-        res.sendStatus(404);
-    }
-});
-*/
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
