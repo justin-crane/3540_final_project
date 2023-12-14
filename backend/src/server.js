@@ -15,6 +15,8 @@ import bcrypt from 'bcryptjs';
 import axios from "axios";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as https from "https";
+import * as fs from "fs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -22,6 +24,11 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../build')));
 app.use(cors());
+
+const httpsServer = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/vgtc.ca/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/vgtc.ca/fullchain.pem'),
+}, app);
 
 app.get(/^(?!\/api).+/, (req, res) => {
     res.sendFile(path.join(__dirname, '../build/index.html'));
@@ -590,4 +597,7 @@ run(() => {
     app.listen(PORT, () => {
         console.log(`App is listening on port ` + PORT);
     });
+    httpsServer.listen(443, ()=>{
+        console.log('HTTPS Server running on port 443.')
+    })
 }).catch(console.dir);
