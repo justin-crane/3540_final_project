@@ -13,14 +13,29 @@ import { Server } from 'socket.io';
 import fetch from 'node-fetch';
 import bcrypt from 'bcryptjs';
 import axios from "axios";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import * as https from "https";
+import * as fs from "fs";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../build')));
+app.use(cors());
+
+const httpsServer = https.createServer({
+    key: fs.readFileSync('/etc/letsencrypt/live/vgtc.ca/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/vgtc.ca/fullchain.pem'),
+}, app);
+
+app.get(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+})
 
 const PORT = process.env.PORT || 3001;
 const messageServerPort = 3002;
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -94,7 +109,7 @@ app.get('/api/hello/', async (req, res) => {
 const oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    'http://localhost:3001/api/google/oauth' // Redirect URI set in Google Cloud
+    '/api/google/oauth' // Redirect URI set in Google Cloud
 );
 
 // Generate Google OAuth URL function
@@ -157,7 +172,7 @@ app.get('/api/google/oauth', async (req, res) => {
         const token = jwt.sign({ id: user._id, email: profile.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '2d' });
         // Redirect to frontend with JWT
         console.log(token);
-        res.redirect(`http://localhost:3000?token=${token}`);
+        res.redirect(`/?token=${token}`);
     } catch (error) {
         console.error('Error during Google OAuth:', error);
         console.log("Error details:", error.message); // More detailed error logging
@@ -376,30 +391,6 @@ app.post('/api/addGameImage/', async (req, res) => {
         return res.json({'imageLocation': req.file.location});
     })
 });
-/* We have two addgames so i commented one out
-app.post('/api/addgame/', async (req, res) => {
-
-    let { name, gameConsole, img, condition, price,
-        forTrade, forSale, userInfo, username, userID, dateAdded, notes } = req.body;
-
-    userInfo = {
-        "username": username,
-        "userID": userID
-    }
-
-    let game = await db.collection('gamelist').insertOne({
-        name, gameConsole, img, condition, forTrade, forSale,
-        userInfo, price, dateAdded, notes
-    });
-    let gameArray = await db.collection('gamelist').find({}).toArray();
-    if (gameArray){
-        res.json(gameArray);
-
-    } else {
-        res.sendStatus(404);
-    }
-});
-*/
 
 // User can add game to their profile
 app.post('/api/addgame/', authenticateToken, async (req, res) => {
@@ -582,4 +573,7 @@ run(() => {
     app.listen(PORT, () => {
         console.log(`App is listening on port ` + PORT);
     });
+    httpsServer.listen(443, ()=>{
+        console.log('HTTPS Server running on port 443.')
+    })
 }).catch(console.dir);

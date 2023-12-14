@@ -4,7 +4,7 @@ let dataReturn;
 export const getGame = async (data, gameFormData) => {
     try {
         const res = await
-            axios.post(`/api/price/${data.name}/${data.gameConsole}/`);
+            axios.post(`http://localhost:3000/api/price/${data.name}/${data.gameConsole}/`);
 
         if (!data.price){
             switch(gameFormData.formCondition){

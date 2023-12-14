@@ -23,7 +23,7 @@ function SearchBar(){
         if (!searchText){
 
         } else {
-            const response = await axios.get(`/api/search/${searchText}`);
+            const response = await axios.get(`http://localhost:3000/api/search/${searchText}`);
             setGamesReturn(await response.data);
         }
     }

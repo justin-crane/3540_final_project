@@ -27,7 +27,7 @@ const UserProfile = () => {
     // Function to fetch user data
     const fetchUserData = async (token) => {
         try {
-            const response = await axios.get('http://localhost:3001/api/user', {
+            const response = await axios.get('/api/user', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -42,7 +42,7 @@ const UserProfile = () => {
     const fetchGames = async (token) => {
         try {
             console.log('Fetching games...');
-            const response = await axios.get('http://localhost:3001/api/user', {
+            const response = await axios.get('/api/user', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
