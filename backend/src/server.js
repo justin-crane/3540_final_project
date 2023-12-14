@@ -109,7 +109,7 @@ app.get('/api/hello/', async (req, res) => {
 const oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    '/api/google/oauth' // Redirect URI set in Google Cloud
+    'https://vgtc.ca/api/google/oauth' // Redirect URI set in Google Cloud
 );
 
 // Generate Google OAuth URL function
@@ -172,14 +172,13 @@ app.get('/api/google/oauth', async (req, res) => {
         const token = jwt.sign({ id: user._id, email: profile.email, username: user.username }, process.env.JWT_SECRET, { expiresIn: '2d' });
         // Redirect to frontend with JWT
         console.log(token);
-        res.redirect(`/?token=${token}`);
+        res.redirect(`https://vgtc.ca/?token=${token}`);
     } catch (error) {
         console.error('Error during Google OAuth:', error);
         console.log("Error details:", error.message); // More detailed error logging
         res.status(500).json({ message: 'Error during Google OAuth' });
     }
 });
-
 
 /*
 
