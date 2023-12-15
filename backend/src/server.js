@@ -515,7 +515,7 @@ app.post('/api/login', async (req, res) => {
     try {
         const user = await db.collection('users').findOne({email: email});
         if (user && await bcrypt.compare(password, user.password)) {
-            const token = jwt.sign({id: user._id, email: email}, process.env.JWT_SECRET, {expiresIn: '2d'});
+            const token = jwt.sign({id: user._id, email: email, username: user.username}, process.env.JWT_SECRET, {expiresIn: '2d'});
             res.status(200).send({token: token});
         } else {
             res.status(401).send('Invalid email or password');
